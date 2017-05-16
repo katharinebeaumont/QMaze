@@ -378,10 +378,9 @@ public class QMaze extends Application {
                 HashMap<Pair,Double> surroundingRooms = (HashMap)table.get(roomCoordinate);
                 for (HashMap.Entry<Pair,Double> entry : surroundingRooms.entrySet()) {
                     Pair nextRoom = entry.getKey();
-                    sb.append(nextRoom.toString());
-                    sb.append(": ");
                     String qValue = String.format("%.2f", entry.getValue());
                     sb.append(qValue);
+                    sb.append(getArrowDirection(roomCoordinate, nextRoom));
                     sb.append("\n");
                     textPane.setStyle("-fx-background-color: #ffffff");
                 }
@@ -399,6 +398,23 @@ public class QMaze extends Application {
         bp.setCenter(sp);
         bp.setMaxWidth(SCREEN_WIDTH/2);
         border.setRight(bp);        
+    }
+    
+    private String getArrowDirection(Pair currentRoom, Pair nextRoom) {
+        int currentRow = (int)currentRoom.getKey();
+        int currentColumn = (int)currentRoom.getValue();
+        int nextRow = (int)nextRoom.getKey();
+        int nextColumn = (int)nextRoom.getValue();
+        if (currentRow == nextRow && currentColumn > nextColumn) {
+            return " <- ";
+        } else if (currentRow == nextRow && currentColumn < nextColumn) {
+            return " -> ";
+        } else if (currentRow > nextRow && currentColumn == nextColumn) {
+            return " ^ ";
+        } else if (currentRow < nextRow && currentColumn == nextColumn) {
+            return " v ";
+        }
+        return nextRoom.toString();
     }
 
 
