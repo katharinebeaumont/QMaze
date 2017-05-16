@@ -4,7 +4,7 @@ You will need: Java 8 and preferably, Netbeans which has support for JavaFX proj
 
 Either build the jar using build.xml, or run the project from src/qmaze/QMaze.java.
 
-The basics: (see this great blog)[http://mnemstudio.org/path-finding-q-learning-tutorial.htm].
+The basics: [see this great blog](http://mnemstudio.org/path-finding-q-learning-tutorial.htm).
 
 ## Creating your maze
 
