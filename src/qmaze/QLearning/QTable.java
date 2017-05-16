@@ -5,6 +5,7 @@
  */
 package qmaze.QLearning;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import javafx.util.Pair;
@@ -80,32 +81,55 @@ public class QTable {
         HashMap<Pair,Double> surroundingRooms = qTable.get(room);
         Set roomLocations = surroundingRooms.keySet();
         int size = roomLocations.size();
+        if (size == 0) {
+            return null;
+        }
         int randomChoice = (int)(Math.random() * size);
         Object[] locations = roomLocations.toArray();
         Pair choice = (Pair)locations[randomChoice];
         return choice;
     }
-        
+    
+    //It's important that if there is more than one best surrounding room, we pick randomly.
+    // If there isn't a best room, pick randomly from what is available.
     public Pair getBestSurroundingRoomOrRandom(Pair room) {
         HashMap<Pair,Double> surroundingRooms = qTable.get(room);
-        Pair bestPair = null;
-        double highestReward = 0;
         
-        for(HashMap.Entry<Pair,Double> entry : surroundingRooms.entrySet()) {
-            Pair p = entry.getKey();
-            if (bestPair == null) {
-                bestPair = p;
-            }
-            double reward = entry.getValue();
-            if (reward > highestReward) {
+        double highestReward = 0;
+        //TODO: if there is more than one best room, pick randomly
+        ArrayList<Pair> highestValues = new ArrayList();
+        Set<Pair> coordinates = surroundingRooms.keySet();
+        for (Pair coordinate : coordinates) {
+        
+            double reward = surroundingRooms.get(coordinate);
+            if (reward > highestReward || (reward == highestReward && reward > 0)) {
+                
                 highestReward = reward;
-                bestPair = p;
+                //Make sure there's nothing lower in 'bestPairs'
+                for (int i=0; i<highestValues.size(); i++) {
+                    Pair checkedValue = (Pair)highestValues.get(i);
+                    double checkedReward = surroundingRooms.get(checkedValue);
+                    if (checkedReward < highestReward) {
+                        highestValues.remove(checkedValue);
+                    }
+                }
+                        
+                highestValues.add(coordinate);
             }
         }
-        if (highestReward == 0) {
+        if (highestValues.size() > 1) {
+            int randomIndex = (int)(Math.random() * highestValues.size());
+            return highestValues.get(randomIndex);
+        } else if (highestReward == 0) {
             return getRandomSurroundingRoom(room);
-        }
-        return bestPair;           
+        } else {
+            return highestValues.get(0);
+        }          
+    }
+    
+    public double getQValue(Pair currentState, Pair nextAction) {
+        HashMap<Pair,Double> surroundingRooms = qTable.get(currentState);
+        return surroundingRooms.get(nextAction);
     }
     
     public void update(Pair currentState, Pair nextAction, double reward) {

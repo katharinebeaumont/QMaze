@@ -16,7 +16,12 @@ public class Room {
     private boolean hasAgent = false;
 
     public void setOpen(boolean open) {
-        this.open = open;
+        if (!hasAgent && reward == 0) {
+            this.open = open;
+        } else {
+            System.out.println("Can't touch this.");
+        }
+        
     }
     
     public boolean getOpen() {

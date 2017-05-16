@@ -14,6 +14,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -21,6 +22,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -40,6 +43,7 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 import qmaze.QLearning.Environment;
 import qmaze.QLearning.QLearning;
+import qmaze.QLearning.QLearningConfig;
 import qmaze.QLearning.QTable;
 import qmaze.QLearning.Room;
 
@@ -47,19 +51,37 @@ import qmaze.QLearning.Room;
  *
  * @author katharine
  * TODO: Fairly horrible class. Refactor.
+ * TODO: bug fix: episodes
+ * TODO: one big scroll pane for bottom bit
+ * TODO: color in QTable
  */
 public class QMaze extends Application {
     
     private Environment env;
     private QLearning qLearning;
+    
+    private final int SCREEN_WIDTH = 900;
+    private final int SCREEN_HEIGHT = 600;
+    private final int ANIMATION_INTERVAL = 500;
+    
     private BorderPane border;
-    final Slider gamma = new Slider(0, 1, 0.7); 
-    final Slider epsilon = new Slider(0, 1, 0.1);    
-    final Slider episodes = new Slider(0, 500, 250);  
+    private final double initialGamma = 0.7;
+    private final double initialEpsilon = 0.1;
+    private final double initialAlpha = 0.1;
+    private final int initialEpisodes = 50;
+    final Slider gamma = new Slider(0, 1, initialGamma); 
+    final Slider epsilon = new Slider(0, 1, initialEpsilon);    
+    final Slider alpha = new Slider(0, 1, initialAlpha);    
+    private final int initialRows = 4;
+    private final int initialColumns = 4;
+    final IntegerSpinnerValueFactory mazeSpinnerRows = new IntegerSpinnerValueFactory(2,16,initialRows);
+    final IntegerSpinnerValueFactory mazeSpinnerColumns = new IntegerSpinnerValueFactory(2,16,initialColumns);
+    final IntegerSpinnerValueFactory mazeSpinnerEpisodes = new IntegerSpinnerValueFactory(1,100,initialEpisodes);
     GridPane mapGrid = new GridPane();
     ImagePattern agent = new ImagePattern(new Image("/resources/agent.png"));
     ImagePattern agentAtGoal = new ImagePattern(new Image("/resources/agentAtGoal.png"));
     ImagePattern goal = new ImagePattern(new Image("/resources/goal.png")); 
+    private final Button btnOptimalPath = new Button();
     
     /**
      * @param args the command line arguments
@@ -71,130 +93,157 @@ public class QMaze extends Application {
     @Override
     public void start(Stage primaryStage) {
         
-        env = new Environment();
-        env.setSmallerDefaultMaze(); 
-        qLearning = new QLearning(env);
         border = new BorderPane();
-        Pane buttonPane = addButtonPane();
-        border.setTop(buttonPane);
+        addButtonPane();
         
+        resetMaze();
         addMaze();
                         
         StackPane root = new StackPane();
-        Scene scene = new Scene(root, 800, 800);
+        Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
         root.getChildren().add(border);
         
         primaryStage.setTitle("Q Learning");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+    
+    private void reset() {
+        addButtonPane();
+        gamma.setValue(initialGamma);
+        epsilon.setValue(initialEpsilon);
+        alpha.setValue(initialAlpha);
+        mazeSpinnerEpisodes.setValue(initialEpisodes);
+        mazeSpinnerRows.setValue(initialRows);
+        mazeSpinnerColumns.setValue(initialColumns);
+        resetMaze();
+        addMaze();
+    }
+    
+    private void resetMaze() {
+        env = new Environment(mazeSpinnerRows.getValue(), mazeSpinnerColumns.getValue());
+        resetQTable();
+    }
 
-    public Pane addButtonPane() {
+    private void resetQTable() {
+        btnOptimalPath.setDisable(true);
+        removeQTable();
+    }
+    
+    private void addButtonPane() {
         
-        FlowPane flow = new FlowPane();
+        FlowPane flow = new FlowPane(Orientation.VERTICAL);
         flow.setPadding(new Insets(5, 0, 5, 0));
         flow.setVgap(4);
         flow.setHgap(4);
         flow.setStyle("-fx-background-color: #a5ea8a;");
+        flow.setMaxHeight(200);
         
         HBox hboxTop = new HBox();
         hboxTop.setPadding(new Insets(15, 12, 15, 12));
         hboxTop.setSpacing(10);
-        hboxTop.setStyle("-fx-background-color: #a5ea8a;");
-        Button btnOpt = new Button();
-        btnOpt.setText("Show optimal path");
-        btnOpt.setOnAction((ActionEvent eventOpt) -> {
+        
+        btnOptimalPath.setText("Show optimal path");
+        btnOptimalPath.setOnAction((ActionEvent eventOpt) -> {
             System.out.println("Finding optimal path");
             HashMap<Integer, Pair> optimalPath = qLearning.findOptimalPath();
             animateMap(optimalPath);
         });
-        btnOpt.setVisible(false);
+        btnOptimalPath.setDisable(true);
             
         Button btn = new Button();
         btn.setText("Start training");
         btn.setOnAction((ActionEvent event) -> {
             System.out.println("Training");
-            qLearning = new QLearning(env);
-            addMaze();
-            qLearning.startLearning(epsilon.getValue(), gamma.getValue(), (int)episodes.getValue());
-            qLearning.printJourney();
+            QLearningConfig config = new QLearningConfig(mazeSpinnerEpisodes.getValue(), gamma.getValue(), epsilon.getValue(), alpha.getValue());
+            qLearning = new QLearning(env,config);
+            qLearning.startLearning();
             addQTable(qLearning.getQTable());
-            btnOpt.setVisible(true);
+            btnOptimalPath.setDisable(false);
         });
         
-        hboxTop.getChildren().add(btn);
-        hboxTop.getChildren().add(btnOpt);
-        
-        
-        HBox hboxEp = new HBox();
-        hboxEp.setPadding(new Insets(15, 12, 15, 12));
-        hboxEp.setSpacing(10);
-        hboxEp.setStyle("-fx-background-color: #a5ea8a;");
-        final Label epsilonTitle = new Label(
-        "Epsilon");
-        
-        epsilon.setShowTickLabels(true);
-        epsilon.setShowTickMarks(true);
-        epsilon.setMajorTickUnit(0.5);
-        epsilon.setBlockIncrement(0.1);
-        
-        final Label epsilonLabel = new Label(
-        Double.toString(epsilon.getValue()));
-                
-        epsilon.valueProperty().addListener((
-            ObservableValue<? extends Number> ov, 
-            Number old_val, Number new_val) -> {
-                epsilonLabel.setText(String.format("%.1f", new_val));
+        Button btnReset = new Button();
+        btnReset.setText("Reset");
+        btnReset.setOnAction((ActionEvent event) -> {
+            System.out.println("Resetting");
+            reset();
         });
-        hboxEp.getChildren().addAll(epsilonTitle, epsilon, epsilonLabel);
-
-        HBox hboxG = new HBox();
-        hboxG.setPadding(new Insets(15, 12, 15, 12));
-        hboxG.setSpacing(10);
-        hboxG.setStyle("-fx-background-color: #a5ea8a;");
-        final Label gammaTitle = new Label(
-        "Gamma");
-           
-        gamma.setShowTickLabels(true);
-        gamma.setShowTickMarks(true);
-        gamma.setMajorTickUnit(0.5);
-        gamma.setBlockIncrement(0.1);
-        final Label gammaLabel = new Label(
-        Double.toString(gamma.getValue()));
         
-        gamma.valueProperty().addListener((
-            ObservableValue<? extends Number> ov, 
-            Number old_val, Number new_val) -> {
-                gammaLabel.setText(String.format("%.1f", new_val));
-        });
-        hboxG.getChildren().addAll(gammaTitle, gamma, gammaLabel);
+        hboxTop.getChildren().addAll(btn, btnOptimalPath, btnReset);
         
-        HBox hboxEpi = new HBox();
-        hboxEpi.setPadding(new Insets(15, 12, 15, 12));
-        hboxEpi.setSpacing(10);
-        hboxEpi.setStyle("-fx-background-color: #a5ea8a;");
-        final Label episodesTitle = new Label(
-        "Episodes");
-           
-        episodes.setShowTickLabels(true);
-        episodes.setShowTickMarks(true);
-        episodes.setMajorTickUnit(500);
-        episodes.setBlockIncrement(100);
-        final Label episodesLabel = new Label(
-        Double.toString(episodes.getValue()));
+        HBox hboxEp = buildSlider(epsilon, "Probability Explore", 1);
+        HBox hboxG = buildSlider(gamma, "Reward Discount", 1);
+        HBox hboxA = buildSlider(alpha, "Learning Rate", 1);
+        HBox hboxSliders = new HBox();
+        hboxSliders.getChildren().addAll(hboxEp,hboxG,hboxA);
         
-        episodes.valueProperty().addListener((
-            ObservableValue<? extends Number> ov, 
-            Number old_val, Number new_val) -> {
-                episodesLabel.setText(String.format("%d", new_val));
-        });
-
-        hboxEpi.getChildren().addAll(episodesTitle, episodes, episodesLabel);
-        flow.getChildren().addAll(hboxTop,hboxEp,hboxG,hboxEpi);
-        return flow;
+        HBox hboxsp = buildSpinners();
+        
+        flow.getChildren().addAll(hboxTop,hboxSliders,hboxsp);
+        border.setTop(flow);
     }
     
-    public void addMaze() {
+    private HBox buildSlider(Slider slider, String labelTitle, double max) {
+        
+        HBox hbox = new HBox();
+        hbox.setPadding(new Insets(15, 12, 15, 12));
+        hbox.setSpacing(10);
+        
+        final Label title = new Label(
+        labelTitle);
+        
+        double majorTickUnit = max/2;
+        double minorTickUnit = max/10;
+        
+        slider.setShowTickLabels(true);
+        slider.setShowTickMarks(true);
+        slider.setMajorTickUnit(majorTickUnit);
+        slider.setBlockIncrement(minorTickUnit);
+        
+        final Label label = new Label(
+        Double.toString(slider.getValue()));
+                
+        slider.valueProperty().addListener((
+            ObservableValue<? extends Number> ov, 
+            Number old_val, Number new_val) -> {
+                label.setText(String.format("%.1f", new_val));
+                resetQTable();
+        });
+        hbox.getChildren().addAll(title, slider, label);
+        return hbox;
+    }
+    
+    private HBox buildSpinners() {
+        HBox hbox = new HBox();
+        hbox.setPadding(new Insets(15, 12, 15, 12));
+        hbox.setSpacing(10);
+        Spinner rowSpinner = new Spinner(mazeSpinnerRows);
+        Spinner columnSpinner = new Spinner(mazeSpinnerColumns);
+        Spinner episodeSpinner = new Spinner(mazeSpinnerEpisodes);
+        episodeSpinner.setEditable(true);
+        final Label labelRows = new Label("Rows");
+        final Label labelCols = new Label("Columns");
+        final Label labelEpisodes = new Label("Episodes");
+        rowSpinner.valueProperty().addListener((obs, oldValue, newValue) -> {
+               resetMaze(); 
+               addMaze();
+        });
+        columnSpinner.valueProperty().addListener((obs, oldValue, newValue) -> {
+               resetMaze(); 
+               addMaze();
+        });
+        episodeSpinner.valueProperty().addListener((obs, oldValue, newValue) -> {
+               mazeSpinnerEpisodes.setValue((int)newValue);
+        });
+        
+        hbox.getChildren().addAll(labelRows, rowSpinner, labelCols, columnSpinner, labelEpisodes, episodeSpinner);
+        return hbox;
+    }
+    
+    private void addMaze() {
+        BorderPane background = new BorderPane();
+        ScrollPane sp = new ScrollPane();
+        
         mapGrid = new GridPane();
         mapGrid.setHgap(10);
         mapGrid.setVgap(10);
@@ -206,8 +255,12 @@ public class QMaze extends Application {
             Room room = entry.getValue();
             setMazeGridRoom(p, room);
         } 
-        mapGrid.setAlignment(Pos.CENTER);
-        border.setCenter(mapGrid);
+        
+        sp.setContent(mapGrid);
+        background.setCenter(sp);
+        
+        border.setCenter(background);
+        
     }
 
     private void setMazeGridRoom(Pair p, Room room) {
@@ -231,9 +284,12 @@ public class QMaze extends Application {
         r.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent value) {
+
                 boolean open = room.getOpen();
                 room.setOpen(!open);
                 setMazeGridRoom(p,room);
+                btnOptimalPath.setDisable(true);
+                removeQTable();
             }
         });
     
@@ -243,35 +299,18 @@ public class QMaze extends Application {
     private void animateMap(HashMap<Integer, Pair> optimalPath) {
         
         //Put this back to normal
-        Pair goalState = env.getGoalState();
-        env.getRoom(goalState).setHasAgent(false);
-        Pair startingState = env.getStartingState();
-        env.getRoom(startingState).setHasAgent(true);
+        env.resetAgent();
+        addMaze();
         
         System.out.println("Finding path");
         Set<Integer> stepsToGoal = optimalPath.keySet();
-        int no_steps = stepsToGoal.size();
-        System.out.println("Steps are: " + no_steps);
-        long interval = 1000;
-        //Whole animation should take around 30 seconds or less. If there are more than 6000
-        // steps, which is highly unlikely, but anyway, don't bother because the
-        // human eye wont see it (and your laptop has probably died by now). 
-        if (no_steps > 6000) {
-            throw new RuntimeException("Too many steps to display");
-        }
-        if (no_steps < 60 && no_steps > 30) {
-            //So if we have more than 60 steps to the optimal path, 
-            // then we want the interval to be smaller to accomodate this
-            long millisAvailable = 30 * 1000;
-            interval = millisAvailable/no_steps;
-        }
-        
+        long interval = getInterval(stepsToGoal);
         System.out.println("Interval is: " + interval);
         long timeMillis = 0;
-        Pair previousPair = null;
         for (Integer key : stepsToGoal) {
+            Pair previousRoom = optimalPath.get(key-1);
             Timeline beat = new Timeline(
-                new KeyFrame(Duration.millis(timeMillis),         event -> updateMaze(optimalPath, key))
+                new KeyFrame(Duration.millis(timeMillis),         event -> updateMaze(optimalPath.get(key), previousRoom))
             );
             beat.setAutoReverse(true);
             beat.setCycleCount(1);
@@ -280,19 +319,15 @@ public class QMaze extends Application {
         } 
     }
 
-    private void updateMaze(HashMap<Integer, Pair> optimalPath, Integer key) {
-        if (key > 0) {
+    private void updateMaze(Pair currentCoordinates, Pair previousRoomCoordinates) {
+        if (previousRoomCoordinates != null) {
             //Put previous room back to normal
-            Pair previous = optimalPath.get(key-1);
-            Room previousRoom = env.getRoom(previous);
+            Room previousRoom = env.getRoom(previousRoomCoordinates);
             previousRoom.setHasAgent(false);
         }
         
-        Pair p = optimalPath.get(key);
-        
-        Room currentRoom = env.getRoom(p);
+        Room currentRoom = env.getRoom(currentCoordinates);
         currentRoom.setHasAgent(true);
-        System.out.println("Step is: " + p.toString());
         
         Node centreNode = border.getCenter();
         if (centreNode != null) {
@@ -302,7 +337,11 @@ public class QMaze extends Application {
         addMaze();
     }
 
-
+    private void removeQTable() {
+        Node qTable = border.getRight();
+        border.getChildren().remove(qTable);
+    }
+    
     private void addQTable(QTable qTable) {
         
         BorderPane bp = new BorderPane();
@@ -314,7 +353,7 @@ public class QMaze extends Application {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(10, 10, 10, 10));
-        grid.setStyle("-fx-background-color: #e4f9db");
+        grid.setStyle("-fx-background-color: #e4f9db"); 
         
         HashMap table = qTable.getTable();
         Set<Pair> roomCoordinates = table.keySet();
@@ -324,7 +363,6 @@ public class QMaze extends Application {
             int rowIndex = (int)roomCoordinate.getKey();
             int columnIndex = (int)roomCoordinate.getValue();
             StringBuilder sb = new StringBuilder();
-            HashMap<Pair,Double> surroundingRooms = (HashMap)table.get(roomCoordinate);
             sb.append("Room ");
             sb.append(rowIndex);
             sb.append(",");
@@ -332,29 +370,55 @@ public class QMaze extends Application {
             sb.append("\n");
             if (!env.getRoom(roomCoordinate).getOpen()) {
                 sb.append("CLOSED");
+                textPane.setStyle("-fx-background-color: #DCDCDC");
+            } else if (env.getGoalState().equals(roomCoordinate)) {
+                sb.append("GOAL");
+                textPane.setStyle("-fx-background-color: #FFD700");
             } else {
+                HashMap<Pair,Double> surroundingRooms = (HashMap)table.get(roomCoordinate);
                 for (HashMap.Entry<Pair,Double> entry : surroundingRooms.entrySet()) {
                     Pair nextRoom = entry.getKey();
                     sb.append(nextRoom.toString());
                     sb.append(": ");
-                    sb.append(entry.getValue().toString());
+                    String qValue = String.format("%.2f", entry.getValue());
+                    sb.append(qValue);
                     sb.append("\n");
+                    textPane.setStyle("-fx-background-color: #ffffff");
                 }
             }
             Text t = new Text(sb.toString());
             
             textPane.getChildren().add(t);
-            textPane.setStyle("-fx-background-color: #ffffff");
             textPane.setMaxHeight(75);
+            textPane.setMaxWidth(75);
             grid.add(textPane, columnIndex, rowIndex);
         }
-        grid.setAlignment(Pos.CENTER);
         sp.setContent(grid);
         Text title = new Text("Q Table");
         bp.setTop(title);
         bp.setCenter(sp);
-        
+        bp.setMaxWidth(SCREEN_WIDTH/2);
         border.setRight(bp);        
+    }
+
+
+    private long getInterval(Set<Integer> stepsToGoal) {
+        int no_steps = stepsToGoal.size();
+        System.out.println("Steps are: " + no_steps);
+        long interval = ANIMATION_INTERVAL;
+        //Whole animation should take around 30 seconds or less. If there are more than 6000
+        // steps, which is highly unlikely, but anyway, don't bother because the
+        // human eye wont see it (and your laptop has probably died by now). 
+        if (no_steps > 6000) {
+            throw new RuntimeException("Too many steps to display");
+        }
+        if (no_steps > 30) {
+            //So if we have more than 60 steps to the optimal path, 
+            // then we want the interval to be smaller to accomodate this
+            long millisAvailable = 30 * 1000;
+            interval = millisAvailable/no_steps;
+        }
+        return interval;
     }
     
 }

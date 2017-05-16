@@ -34,8 +34,7 @@ public class QTableTest {
     
     @Before
     public void setUp() {
-        env = new Environment();
-        env.setDefaultMaze();
+        env = new Environment(4,4);
     }
     
     @After
@@ -47,23 +46,58 @@ public class QTableTest {
         QTable qtable = new QTable(env);
         int row = env.getRows() -1;
         int col = env.getColumns() -1;
-        
+        Pair finalRoom = new Pair(row,col);
         Pair penultimateRoom = new Pair(row-1,col);
-        Pair finalRoom = qtable.getBestSurroundingRoomOrRandom(penultimateRoom);
+        qtable.update(penultimateRoom, finalRoom, 100);
+        Pair resultingRoom = qtable.getBestSurroundingRoomOrRandom(penultimateRoom);
         
-        assertEquals(new Pair(row,col), finalRoom);
+        assertEquals(new Pair(row,col), resultingRoom);
     }
     
-    @Test
-    public void testGetRandomSurroundingRoom() {
+     @Test
+    public void testGetBestSurroundingRoomWhenBothEqual() {
         QTable qtable = new QTable(env);
         int row = env.getRows() -1;
         int col = env.getColumns() -1;
+        Pair currentState = new Pair(row,col-1);
+        Pair goalState = new Pair(row,col);
+        Pair neightbourState = new Pair(row-1,col-1);
+        qtable.update(currentState, goalState, 100);
+        qtable.update(currentState, neightbourState, 100);
         
-        Pair penultimateRoom = new Pair(row-2,col-2);
-        Pair finalRoom = qtable.getRandomSurroundingRoom(penultimateRoom);
+        Pair finalRoom = qtable.getBestSurroundingRoomOrRandom(currentState);
         
-        assertEquals(new Pair(row,col), finalRoom);
+        assertEquals(goalState, finalRoom);
     }
+    
+    @Test
+    public void testGetBestSurroundingRoomWhenMultipleGoodRooms() {
+        QTable qtable = new QTable(env);
+        int row = env.getRows() -1;
+        int col = env.getColumns() -1;
+        Pair currentState = new Pair(row,col-1);
+        Pair goalState = new Pair(row,col);
+        Pair neighbourState = new Pair(row-1,col-1);
+        Pair neighbourState2 = new Pair(row,col-2);
+        qtable.update(currentState, goalState, 80);
+        qtable.update(currentState, neighbourState, 100);
+        qtable.update(currentState, neighbourState2, 90);
+        
+        Pair finalRoom = qtable.getBestSurroundingRoomOrRandom(currentState);
+        
+        assertEquals(neighbourState, finalRoom);
+    }
+    
+    //@Test
+    //public void testGetRandomSurroundingRoom() {
+    //    QTable qtable = new QTable(env);
+    //    int row = env.getRows() -1;
+    //    int col = env.getColumns() -1;
+    //    
+    //    Pair penultimateRoom = new Pair(row-2,col-2);
+    //    Pair finalRoom = qtable.getRandomSurroundingRoom(penultimateRoom);
+    //    
+    //    assertEquals(new Pair(row,col), finalRoom);
+    //}
     
 }
