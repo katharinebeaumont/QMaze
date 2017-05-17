@@ -66,15 +66,16 @@ public class QLearning {
                 }
                 //Q learning: get the reward for moving from the current room, into the next one.
                 // From current state, to next action. The reward comes from the environment.
-                double rewardForNextRoom = environment.getRoom(nextRoom).getReward();
+                double reward = environment.getRoom(nextRoom).getReward();
                 
                 // Add that to the maximum reward we remember (in the Q table) that we could get, moving
                 // onwards from the next action. What do we remember about going forwards from the next action?
                 // Q(state, action) = R(state, action) + Gamma * Max[Q(next state, all actions)]
+                double currentQValue = qTable.getQValue(currentState, nextRoom);
                 Pair bestRoomAfterNextRoom = qTable.getBestSurroundingRoomOrRandom(nextRoom);
-                double rewardForBestRoomAfterNextRoom = qTable.getQValue(nextRoom, bestRoomAfterNextRoom);
-                double totalReward = rewardForNextRoom + (alpha * (gamma * rewardForBestRoomAfterNextRoom));
-                qTable.update(currentState, nextRoom, totalReward);
+                double estimatedBestFutureReward = qTable.getQValue(nextRoom, bestRoomAfterNextRoom);
+                double qValue = currentQValue + (alpha * (reward + (gamma * estimatedBestFutureReward) - currentQValue));
+                qTable.update(currentState, nextRoom, qValue);
                 
                 //Move into the next room
                 currentState = nextRoom;
@@ -102,7 +103,6 @@ public class QLearning {
         int step = 0;
         journeyToOptimal.put(step, currentRoom);
         System.out.println("Figuring out journey.");
-        System.out.println("Starting at: " + currentRoom.toString());
         while (!currentRoom.equals(goalState) && step < OPTIMAL_PATH_CUT_OFF) {
             Pair nextRoom = qTable.getBestSurroundingRoomOrRandom(currentRoom);
             currentRoom = nextRoom;
@@ -124,8 +124,6 @@ public class QLearning {
         if (visit == null) {
             return 0;
         }
-        System.out.println("visit is " + visit);
-        System.out.println("max visits is " + journey.getMaxVisits());
         return (double)visit/(double)journey.getMaxVisits();
     }
 }

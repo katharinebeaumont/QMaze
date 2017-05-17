@@ -134,9 +134,7 @@ public class QTable {
     
     public void update(Pair currentState, Pair nextAction, double reward) {
         HashMap<Pair,Double> surroundingRooms = getSurroundingRooms(currentState);
-        double currentReward = surroundingRooms.get(nextAction);
-        double updatedReward = currentReward + reward;
-        surroundingRooms.put(nextAction, updatedReward);
+        surroundingRooms.put(nextAction, reward);
     }
     
     public HashMap getTable() {
