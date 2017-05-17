@@ -43,5 +43,4 @@ public class Room {
     public void setReward(double reward) {
         this.reward = reward;
     } 
-    
 }

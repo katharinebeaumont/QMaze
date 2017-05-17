@@ -15,7 +15,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -51,9 +50,7 @@ import qmaze.QLearning.Room;
  *
  * @author katharine
  * TODO: Fairly horrible class. Refactor.
- * TODO: bug fix: episodes
- * TODO: one big scroll pane for bottom bit
- * TODO: color in QTable
+ * Oh dear.
  */
 public class QMaze extends Application {
     
@@ -276,7 +273,13 @@ public class QMaze extends Application {
         } else if (room.getReward() > 0) {
             r.setFill(goal);
         } else if (room.getOpen()) {
-            r.setFill(Color.WHITE);
+            double visitCount = 0;
+            if (qLearning != null && !btnOptimalPath.isDisabled()) {
+                visitCount = qLearning.getVisitTraffic(p);
+            }
+            
+            Color visitColor = Color.color(1, 1, (1-visitCount));
+            r.setFill(visitColor);
         } else {
             r.setFill(Color.GAINSBORO);
         }

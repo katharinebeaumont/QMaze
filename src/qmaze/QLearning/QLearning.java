@@ -49,7 +49,7 @@ public class QLearning {
             Pair goalState = environment.getGoalState();
             
             HashMap<Integer, Pair> journeyForEpisode = new HashMap();
-            //journeyForEpisode.put(step, currentState);
+            journeyForEpisode.put(step, currentState);
             
             while (!currentState.equals(goalState) && step < TRAINING_CUT_OFF) {
                 Pair nextRoom;
@@ -87,7 +87,7 @@ public class QLearning {
                 System.out.println("Are you trying to blow this up?!");
             }
             
-            //journey.put(i, journeyForEpisode);
+            journey.put(i, journeyForEpisode);
             if (i % 10 == 0) {
                 System.out.println("Episode " + i + " complete.");
             }
@@ -117,5 +117,15 @@ public class QLearning {
             return new HashMap();
         }
         return journeyToOptimal;
+    }
+    
+    public double getVisitTraffic(Pair coordinates) {
+        Integer visit = journey.getVisit().get(coordinates);
+        if (visit == null) {
+            return 0;
+        }
+        System.out.println("visit is " + visit);
+        System.out.println("max visits is " + journey.getMaxVisits());
+        return (double)visit/(double)journey.getMaxVisits();
     }
 }

@@ -16,6 +16,7 @@ import javafx.util.Pair;
 public class Journey {
     
     private HashMap<Integer, HashMap<Integer, Pair>> journeyMemory;
+    private int maxVisits = 0;
     
     public Journey() {
         journeyMemory = new HashMap();
@@ -23,6 +24,36 @@ public class Journey {
     
     public void put(int i, HashMap episodeMemory) {
         journeyMemory.put(i, episodeMemory);
+    }
+    
+    //Probs a much better way of organising this data. H2 in memory DB perhaps.
+    // Or better Collection......... 
+    // TODO: look at this. Journey should be DB?
+    public HashMap<Pair,Integer> getVisit() {
+       //Convert journeyMemory to Pair, count
+       maxVisits = 0;
+       HashMap<Pair,Integer> coordinateToVisitCount = new HashMap();
+       Set<Integer> episodes = journeyMemory.keySet();
+        for (Integer episode: episodes) {
+            HashMap steps = journeyMemory.get(episode);
+            Set<Integer> stepsInJourney = steps.keySet();
+            for (Integer individualStep: stepsInJourney) {
+                Pair coordinate = (Pair)steps.get(individualStep);
+                Integer count = coordinateToVisitCount.get(coordinate);
+                if (count == null) {
+                    coordinateToVisitCount.put(coordinate, 1);
+                } else {
+                    count++;
+                    coordinateToVisitCount.put(coordinate, count);
+                    if (count > maxVisits) maxVisits = count;
+                }                
+            }
+        }
+        return coordinateToVisitCount;
+    }
+    
+    public int getMaxVisits() {
+        return maxVisits;
     }
     
     @Override
