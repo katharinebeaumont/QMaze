@@ -5,79 +5,66 @@
  */
 package qmaze;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import qmaze.View.QMazeLearning;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
-import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.util.Pair;
-import qmaze.QLearning.Environment;
-import qmaze.QLearning.QLearning;
-import qmaze.QLearning.QLearningConfig;
-import qmaze.QLearning.QTable;
-import qmaze.QLearning.Room;
+import qmaze.Controller.LearningController;
+import qmaze.Environment.Coordinates;
+import qmaze.View.QMazeConfig;
+import qmaze.View.QMazeGrid;
 
 /**
  *
  * @author katharine
- * TODO: Fairly horrible class. Refactor.
- * Oh dear.
  */
 public class QMaze extends Application {
+
+    private final LearningController controller = new LearningController();   
+    private final QMazeLearning mazeLearning = new QMazeLearning();
     
-    private Environment env;
-    private QLearning qLearning;
+    private QMazeGrid mazeGrid;
+    private BorderPane border;
     
     private final int SCREEN_WIDTH = 900;
     private final int SCREEN_HEIGHT = 600;
-    private final int ANIMATION_INTERVAL = 500;
     
-    private BorderPane border;
     private final double initialGamma = 0.7;
     private final double initialEpsilon = 0.1;
     private final double initialAlpha = 0.1;
     private final int initialEpisodes = 50;
     final Slider gamma = new Slider(0, 1, initialGamma); 
     final Slider epsilon = new Slider(0, 1, initialEpsilon);    
-    final Slider alpha = new Slider(0, 1, initialAlpha);    
+    final Slider alpha = new Slider(0, 1, initialAlpha);  
+    private String heatMapColor = "";
     private final int initialRows = 4;
     private final int initialColumns = 4;
     final IntegerSpinnerValueFactory mazeSpinnerRows = new IntegerSpinnerValueFactory(2,16,initialRows);
     final IntegerSpinnerValueFactory mazeSpinnerColumns = new IntegerSpinnerValueFactory(2,16,initialColumns);
     final IntegerSpinnerValueFactory mazeSpinnerEpisodes = new IntegerSpinnerValueFactory(1,100,initialEpisodes);
-    GridPane mapGrid = new GridPane();
-    ImagePattern agent = new ImagePattern(new Image("/resources/agent.png"));
-    ImagePattern agentAtGoal = new ImagePattern(new Image("/resources/agentAtGoal.png"));
-    ImagePattern goal = new ImagePattern(new Image("/resources/goal.png")); 
+    
     private final Button btnOptimalPath = new Button();
     
     /**
@@ -118,7 +105,7 @@ public class QMaze extends Application {
     }
     
     private void resetMaze() {
-        env = new Environment(mazeSpinnerRows.getValue(), mazeSpinnerColumns.getValue());
+        mazeGrid = new QMazeGrid(mazeSpinnerRows.getValue(), mazeSpinnerColumns.getValue(), border);
         resetQTable();
     }
 
@@ -142,21 +129,14 @@ public class QMaze extends Application {
         
         btnOptimalPath.setText("Show optimal path");
         btnOptimalPath.setOnAction((ActionEvent eventOpt) -> {
-            System.out.println("Finding optimal path");
-            HashMap<Integer, Pair> optimalPath = qLearning.findOptimalPath();
-            animateMap(optimalPath);
+            showOptimalPath();
         });
         btnOptimalPath.setDisable(true);
             
         Button btn = new Button();
         btn.setText("Start training");
         btn.setOnAction((ActionEvent event) -> {
-            System.out.println("Training");
-            QLearningConfig config = new QLearningConfig(mazeSpinnerEpisodes.getValue(), gamma.getValue(), epsilon.getValue(), alpha.getValue());
-            qLearning = new QLearning(env,config);
-            qLearning.startLearning();
-            addQTable(qLearning.getQTable());
-            btnOptimalPath.setDisable(false);
+            startTraining();
         });
         
         Button btnReset = new Button();
@@ -166,7 +146,9 @@ public class QMaze extends Application {
             reset();
         });
         
-        hboxTop.getChildren().addAll(btn, btnOptimalPath, btnReset);
+        ComboBox heatMap = buildHeatMapCombo();
+        
+        hboxTop.getChildren().addAll(btn, btnOptimalPath, btnReset, heatMap);
         
         HBox hboxEp = buildSlider(epsilon, "Probability Explore", 1);
         HBox hboxG = buildSlider(gamma, "Reward Discount", 1);
@@ -178,6 +160,35 @@ public class QMaze extends Application {
         
         flow.getChildren().addAll(hboxTop,hboxSliders,hboxsp);
         border.setTop(flow);
+    }
+    
+    private ComboBox buildHeatMapCombo() {
+        ObservableList<String> options = 
+            FXCollections.observableArrayList(
+                "Green",
+                "Yellow",
+                "Pink",
+                "Blue",
+                "Cyan",
+                "Red",
+                "None"
+            );
+        ComboBox heatMapOptions = new ComboBox(options);
+        heatMapOptions.setPromptText("Heat map colour");
+        
+         heatMapOptions.valueProperty().addListener(new ChangeListener<String>() {
+            @Override 
+            public void changed(ObservableValue ov, String t, String t1) {                
+                heatMapColor = t1;                
+            }    
+        });
+        return heatMapOptions;
+    }
+
+    private void showOptimalPath() {
+        System.out.println("Finding optimal path...");
+        ArrayList<Coordinates> optimalPath = controller.getOptimalPath(mazeGrid.getStartingState());
+        mazeGrid.animateMap(optimalPath);
     }
     
     private HBox buildSlider(Slider slider, String labelTitle, double max) {
@@ -238,106 +249,7 @@ public class QMaze extends Application {
     }
     
     private void addMaze() {
-        BorderPane background = new BorderPane();
-        ScrollPane sp = new ScrollPane();
-        
-        mapGrid = new GridPane();
-        mapGrid.setHgap(10);
-        mapGrid.setVgap(10);
-        mapGrid.setPadding(new Insets(10, 10, 10, 10));
-        
-        HashMap<Pair,Room> rooms = env.getRooms();
-        for (HashMap.Entry<Pair,Room> entry : rooms.entrySet()) {
-            Pair p = entry.getKey();
-            Room room = entry.getValue();
-            setMazeGridRoom(p, room);
-        } 
-        
-        sp.setContent(mapGrid);
-        background.setCenter(sp);
-        
-        border.setCenter(background);
-        
-    }
-
-    private void setMazeGridRoom(Pair p, Room room) {
-        int rowIndex = (int)p.getKey();
-        int columnIndex = (int)p.getValue();
-        Rectangle r = new Rectangle(50,50);
-        Tooltip tp = new Tooltip("R:" + rowIndex + ", C:" + columnIndex);
-        Tooltip.install(r, tp);
-        if (room.getHasAgent() && room.getReward() > 0) {
-            r.setFill(agentAtGoal);
-        }else if (room.getHasAgent()) {
-             r.setFill(agent);
-        } else if (room.getReward() > 0) {
-            r.setFill(goal);
-        } else if (room.getOpen()) {
-            double visitCount = 0;
-            if (qLearning != null && !btnOptimalPath.isDisabled()) {
-                visitCount = qLearning.getVisitTraffic(p);
-            }
-            
-            Color visitColor = Color.color(1, 1, (1-visitCount));
-            r.setFill(visitColor);
-        } else {
-            r.setFill(Color.GAINSBORO);
-        }
-        
-        r.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent value) {
-
-                boolean open = room.getOpen();
-                room.setOpen(!open);
-                setMazeGridRoom(p,room);
-                btnOptimalPath.setDisable(true);
-                removeQTable();
-            }
-        });
-    
-        mapGrid.add(r, columnIndex, rowIndex);
-    }
-    
-    private void animateMap(HashMap<Integer, Pair> optimalPath) {
-        
-        //Put this back to normal
-        env.resetAgent();
-        addMaze();
-        
-        System.out.println("Finding path");
-        Set<Integer> stepsToGoal = optimalPath.keySet();
-        long interval = getInterval(stepsToGoal);
-        System.out.println("Interval is: " + interval);
-        long timeMillis = 0;
-        for (Integer key : stepsToGoal) {
-            Pair previousRoom = optimalPath.get(key-1);
-            Timeline beat = new Timeline(
-                new KeyFrame(Duration.millis(timeMillis),         event -> updateMaze(optimalPath.get(key), previousRoom))
-            );
-            beat.setAutoReverse(true);
-            beat.setCycleCount(1);
-            beat.play();
-            timeMillis = timeMillis + interval;
-        } 
-    }
-
-    private void updateMaze(Pair currentCoordinates, Pair previousRoomCoordinates) {
-        if (previousRoomCoordinates != null) {
-            //Put previous room back to normal
-            Room previousRoom = env.getRoom(previousRoomCoordinates);
-            previousRoom.setHasAgent(false);
-        }
-        
-        Room currentRoom = env.getRoom(currentCoordinates);
-        currentRoom.setHasAgent(true);
-        
-        Node centreNode = border.getCenter();
-        if (centreNode != null) {
-            border.getChildren().remove(centreNode);
-        }
-        
-        addMaze();
+        mazeGrid.buildMaze();
     }
 
     private void removeQTable() {
@@ -345,99 +257,20 @@ public class QMaze extends Application {
         border.getChildren().remove(qTable);
     }
     
-    private void addQTable(QTable qTable) {
-        
-        BorderPane bp = new BorderPane();
-        
-        ScrollPane sp = new ScrollPane();
-        
-        GridPane grid = new GridPane();
-        grid.setBorder(Border.EMPTY);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(10, 10, 10, 10));
-        grid.setStyle("-fx-background-color: #e4f9db"); 
-        
-        HashMap table = qTable.getTable();
-        Set<Pair> roomCoordinates = table.keySet();
-        for (Pair roomCoordinate: roomCoordinates) {
-            Pane textPane = new Pane();
-            
-            int rowIndex = (int)roomCoordinate.getKey();
-            int columnIndex = (int)roomCoordinate.getValue();
-            StringBuilder sb = new StringBuilder();
-            sb.append("Room ");
-            sb.append(rowIndex);
-            sb.append(",");
-            sb.append(columnIndex);
-            sb.append("\n");
-            if (!env.getRoom(roomCoordinate).getOpen()) {
-                sb.append("CLOSED");
-                textPane.setStyle("-fx-background-color: #DCDCDC");
-            } else if (env.getGoalState().equals(roomCoordinate)) {
-                sb.append("GOAL");
-                textPane.setStyle("-fx-background-color: #FFD700");
-            } else {
-                HashMap<Pair,Double> surroundingRooms = (HashMap)table.get(roomCoordinate);
-                for (HashMap.Entry<Pair,Double> entry : surroundingRooms.entrySet()) {
-                    Pair nextRoom = entry.getKey();
-                    String qValue = String.format("%.2f", entry.getValue());
-                    sb.append(qValue);
-                    sb.append(getArrowDirection(roomCoordinate, nextRoom));
-                    sb.append("\n");
-                    textPane.setStyle("-fx-background-color: #ffffff");
-                }
-            }
-            Text t = new Text(sb.toString());
-            
-            textPane.getChildren().add(t);
-            textPane.setMaxHeight(75);
-            textPane.setMaxWidth(75);
-            grid.add(textPane, columnIndex, rowIndex);
-        }
-        sp.setContent(grid);
-        Text title = new Text("Q Table");
-        bp.setTop(title);
-        bp.setCenter(sp);
-        bp.setMaxWidth(SCREEN_WIDTH/2);
-        border.setRight(bp);        
-    }
-    
-    private String getArrowDirection(Pair currentRoom, Pair nextRoom) {
-        int currentRow = (int)currentRoom.getKey();
-        int currentColumn = (int)currentRoom.getValue();
-        int nextRow = (int)nextRoom.getKey();
-        int nextColumn = (int)nextRoom.getValue();
-        if (currentRow == nextRow && currentColumn > nextColumn) {
-            return " <- ";
-        } else if (currentRow == nextRow && currentColumn < nextColumn) {
-            return " -> ";
-        } else if (currentRow > nextRow && currentColumn == nextColumn) {
-            return " ^ ";
-        } else if (currentRow < nextRow && currentColumn == nextColumn) {
-            return " v ";
-        }
-        return nextRoom.toString();
+    private void addQTable() {
+        final HashMap<Coordinates, HashMap<Coordinates, Double>> learnings = controller.getLearnings(mazeGrid.getRooms());
+        Pane qTable = mazeLearning.addQTable(learnings, mazeGrid.getGoalState());
+        border.setRight(qTable);
     }
 
-
-    private long getInterval(Set<Integer> stepsToGoal) {
-        int no_steps = stepsToGoal.size();
-        System.out.println("Steps are: " + no_steps);
-        long interval = ANIMATION_INTERVAL;
-        //Whole animation should take around 30 seconds or less. If there are more than 6000
-        // steps, which is highly unlikely, but anyway, don't bother because the
-        // human eye wont see it (and your laptop has probably died by now). 
-        if (no_steps > 6000) {
-            throw new RuntimeException("Too many steps to display");
-        }
-        if (no_steps > 30) {
-            //So if we have more than 60 steps to the optimal path, 
-            // then we want the interval to be smaller to accomodate this
-            long millisAvailable = 30 * 1000;
-            interval = millisAvailable/no_steps;
-        }
-        return interval;
+    public void startTraining() {
+        System.out.println("Training");
+        QMazeConfig config = new QMazeConfig(mazeSpinnerEpisodes.getValue(), gamma.getValue(), epsilon.getValue(), alpha.getValue());
+        controller.startLearning(mazeGrid.getRooms(),
+                mazeGrid.getRows(), mazeGrid.getColumns(), mazeGrid.getStartingState(), config);
+        btnOptimalPath.setDisable(false);
+        addQTable();
+        HashMap heatMap = controller.getHeatMap();
+        mazeGrid.showVisitCount(heatMap, heatMapColor);
     }
-    
 }

@@ -1,16 +1,16 @@
-package qmaze.QLearning;
+package qmaze.View;
 
 /**
  *
  * @author katharine
  */
-public class QLearningConfig {
+public class QMazeConfig {
     private final int episodes;
     private final double gamma;
     private final double epsilon;
     private final double alpha;
-   
-    public QLearningConfig(int episodes, double gamma, double epsilon, double alpha) {
+    
+    public QMazeConfig(int episodes, double gamma, double epsilon, double alpha) {
         this.episodes = episodes;
         this.gamma = gamma;
         this.epsilon = epsilon;
