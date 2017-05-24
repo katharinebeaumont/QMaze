@@ -10,18 +10,17 @@ The basics: [see this great blog](http://mnemstudio.org/path-finding-q-learning-
 
 Increase/decrease the rows and columns using the sliders on the third row of buttons. 
 
-Click on the white grid boxes to open or close rooms. 
+Click on the white grid boxes to open or close rooms. Before training, select if you would like to display a heatmap.
+NB there is some work to be done on this (so you can see the colour change without having to "start training" again.
 
 Click 'start training' to run through the Q Learning process, using the variables configured.
 
 The Q Table on the right of the application shows the values in the Q Table. 
-To output the steps taken during training, do something like:
-`System.out.println(qLearning.getQTable().toString());`
-in `QMaze.java` after `qLearning.startLearning();` in `addButtonPane()`.
 
 Once trained, click 'show optimal path' to show the robot moving through the maze. This takes a maximum of 30 seconds. 
 
 Please note - if training is not 'complete', in that the Q Table doesn't have values for earlier rooms, the optimal path will still involve a high element of randomness, so the optimal path won't be consistent. 
+Please also note - there is a cut-off point, so if for any reason the steps to the optimal path are too many, it won't animate. Keep an eye on the console.
 
 ## Hyperparameters
 
