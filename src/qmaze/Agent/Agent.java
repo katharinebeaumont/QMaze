@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import qmaze.Environment.Coordinates;
 
 /**
- *
+ * Q(S(t), A(t)) ← Q(S(t), A(t)) + α [ R(t+1) + γ max Q(S(t+1), a) − Q(S(t), A(t)) ].
+ * 
  * @author katharine
  * I know about:
  *  - My memory of learned rewards and possible actions
@@ -35,7 +36,6 @@ public class Agent {
     
     public void start(Coordinates startingState) {
         memory.setStartingState(startingState);
-        introduceSelf(startingState);
     }
     
     public void move(Coordinates nextState) {
@@ -128,7 +128,7 @@ public class Agent {
         double alpha = learningParameters.getLearningRate();
         double gamma = learningParameters.getGamma();
         double epsilon = learningParameters.getEpsilon();
-        System.out.println("Hi! I'm training with epsilon: " + epsilon + " gamma: " 
+        System.out.println("I'm training with epsilon: " + epsilon + " gamma: " 
                 + gamma + " and alpha: " + alpha + "\nStaring at " + startingState.toString());
     }
     

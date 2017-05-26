@@ -7,8 +7,8 @@ import qmaze.Agent.AgentLearningParameters;
 import qmaze.Agent.AgentMemory;
 import qmaze.Environment.Coordinates;
 import qmaze.Environment.Maze;
-import qmaze.View.QMazeConfig;
-import qmaze.View.QMazeRoom;
+import qmaze.View.TrainingConfig;
+import qmaze.View.MazeComponents.QMazeRoom;
 
 /**
  *
@@ -36,12 +36,12 @@ public class LearningController {
         
     }
     
-    public void startLearning(ArrayList<QMazeRoom> rooms, int rows, int columns, Coordinates startingState, QMazeConfig mazeConfig) {
+    public void startLearning(ArrayList<QMazeRoom> rooms, int rows, int columns, Coordinates startingState, TrainingConfig mazeConfig) {
         
         heatMap = new HashMap();
         initialiseMaze(rooms, rows, columns);
         initialiseAgent(mazeConfig);
-        
+        agent.introduceSelf(startingState);
         int episodes = mazeConfig.getEpisodes();
         
         for (int i=0; i<episodes; i++) {
@@ -50,7 +50,6 @@ public class LearningController {
             Episode e = new Episode(agent, maze, startingState);
             try { 
                 e.play();
-                System.out.println("**Finished training episode " + i);
             } catch (EpisodeInterruptedException ex) {
                 System.out.println(ex.getMessage());
             }
@@ -71,7 +70,7 @@ public class LearningController {
         });
     }
 
-    private void initialiseAgent(QMazeConfig mazeConfig) {
+    private void initialiseAgent(TrainingConfig mazeConfig) {
         learningParameters = new AgentLearningParameters(mazeConfig.getEpsilon(), mazeConfig.getAlpha(), mazeConfig.getGamma());
         agent = new Agent(learningParameters);
     }

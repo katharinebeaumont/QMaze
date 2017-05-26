@@ -1,13 +1,9 @@
 package qmaze.Controller;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-
-import static org.junit.Assert.*;
 import qmaze.Agent.Agent;
 import qmaze.Agent.AgentLearningParameters;
 import qmaze.Environment.Coordinates;
@@ -16,6 +12,7 @@ import qmaze.Environment.Maze;
 /**
  *
  * @author katharine
+ * This is really just hear so I can debug it and test manually.
  */
 public class EpisodeTest {
     

@@ -3,7 +3,6 @@ package qmaze.Agent;
 import java.util.ArrayList;
 import org.junit.Test;
 
-
 import static org.junit.Assert.*;
 import qmaze.Environment.Coordinates;
 

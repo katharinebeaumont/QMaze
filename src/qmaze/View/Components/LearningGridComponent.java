@@ -1,8 +1,10 @@
-package qmaze.View;
+package qmaze.View.Components;
 
+import qmaze.View.ViewController;
 import java.util.HashMap;
 import java.util.Set;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Border;
@@ -15,17 +17,37 @@ import qmaze.Environment.Coordinates;
 /**
  *
  * @author katharine
- * COLUMN IS X
- * ROW IS Y
  */
-public class QMazeLearning {
-        
-    private final int MAX_WIDTH = 400;
+public class LearningGridComponent extends Component {
+
+    private BorderPane border = new BorderPane();
     
-    public Pane addQTable(HashMap<Coordinates, HashMap<Coordinates,Double>> roomLearnings, Coordinates goalState) {
+    public LearningGridComponent(ViewController controller) {
+        super(controller);
+    }
+    
+    @Override
+    public Pane build() {
+        HashMap<Coordinates, HashMap<Coordinates,Double>> roomLearnings = controller.getLearnings();
+        Coordinates goalState = controller.getGoalState();
+        return addQTable(roomLearnings, goalState);
+    }
+    
+    @Override
+    public void reset() {
+        if (controller.STATE.equals(TRAINED_STATE)) {
+            build();
+        } else {
+            Node qTable = border.getCenter();
+            border.getChildren().remove(qTable);
+        }
+    }
+    
+    private Pane addQTable(HashMap<Coordinates, HashMap<Coordinates,Double>> roomLearnings, Coordinates goalState) {
         
-        BorderPane bp = new BorderPane();
-        
+        if (roomLearnings.isEmpty()) {
+            return border;
+        }
         ScrollPane sp = new ScrollPane();
         
         GridPane grid = new GridPane();
@@ -76,16 +98,16 @@ public class QMazeLearning {
             Tooltip.install(textPane, tp);
                     
             textPane.getChildren().add(t);
-            textPane.setMinSize(75,75);
+            textPane.setMinSize(60,60);
+            textPane.setMaxSize(70,70);
             
             grid.add(textPane, columnIndex, rowIndex);
         }
         sp.setContent(grid);
         Text title = new Text("Q Table");
-        bp.setTop(title);
-        bp.setCenter(sp);
-        bp.setMaxWidth(MAX_WIDTH);
-        return bp;
+        border.setTop(title);
+        border.setCenter(sp);
+        return border;
     }
     
     private String getArrowDirection(Coordinates currentRoom, Coordinates nextRoom) {
@@ -121,5 +143,5 @@ public class QMazeLearning {
         }
         return nextRoom.toString();
     }
-
+    
 }
