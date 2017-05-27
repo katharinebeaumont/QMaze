@@ -1,6 +1,6 @@
 # QMaze
 
-Build a maze! Teach your robot to navigate the maze, by playing with Q Learning configuration. Q Learning is 
+Build a maze! Teach your robot to navigate the maze, by playing with Q Learning configuration. Q Learning is one approach to the problem of Reinforcement Learning.
 
 The basics: [see this great blog](http://mnemstudio.org/path-finding-q-learning-tutorial.htm).
 
