@@ -12,7 +12,7 @@ import qmaze.View.ViewController;
 public abstract class Component {
     
     public final ViewController controller;
-    public final Assets assets = new Assets();
+    public final Assets assets = Assets.getInstance();
     
     public Component(ViewController controller) {
         this.controller = controller;

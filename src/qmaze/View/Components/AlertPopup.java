@@ -10,7 +10,7 @@ import qmaze.View.Assets;
  */
 public class AlertPopup {
 
-    Assets assets = new Assets();
+    private final Assets assets = Assets.getInstance();
     
     private AlertPopup() {
         

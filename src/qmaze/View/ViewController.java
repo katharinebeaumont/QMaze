@@ -2,10 +2,7 @@ package qmaze.View;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
 import qmaze.Controller.LearningController;
 import qmaze.Controller.TrainingInterruptedException;
 import qmaze.Environment.Coordinates;

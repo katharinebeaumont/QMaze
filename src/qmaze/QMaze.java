@@ -16,6 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import qmaze.View.Assets;
+import qmaze.View.Components.AgentImageComboComponent;
 import qmaze.View.ViewController;
 import qmaze.View.Components.HeatMapComboComponent;
 import qmaze.View.Components.InstructionsPopupComponent;
@@ -33,7 +34,8 @@ import qmaze.View.Components.OptimalPathButtonComponent;
 public class QMaze extends Application {
 
     private BorderPane border;
-    private final Assets assets = new Assets();
+    private final Assets assets = Assets.getInstance();
+    
     
     private final int SCREEN_WIDTH = 1200;
     private final int SCREEN_HEIGHT = 600;
@@ -77,8 +79,9 @@ public class QMaze extends Application {
         ResetButtonComponent reset = new ResetButtonComponent(controller);
         OptimalPathButtonComponent optimal = new OptimalPathButtonComponent(controller);
         HeatMapComboComponent heatMap = new HeatMapComboComponent(controller);
+        AgentImageComboComponent agentCombo = new AgentImageComboComponent(controller);
         InstructionsPopupComponent inst = new InstructionsPopupComponent(controller);
-        hboxTop.getChildren().addAll(stc.build(), reset.build(), optimal.build(), heatMap.build(), inst.build());
+        hboxTop.getChildren().addAll(inst.build(), stc.build(), reset.build(), optimal.build(), heatMap.build(), agentCombo.build());
         
         LearningParameterComponent learningParam = new LearningParameterComponent(controller);
         Pane learningParamsPane = learningParam.build();

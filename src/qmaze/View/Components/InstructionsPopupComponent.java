@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.web.WebView;
 import qmaze.View.ViewController;
 
 /**
@@ -37,7 +38,6 @@ public class InstructionsPopupComponent extends Component {
         btnShowInstructions.setText("Instructions");
         hbox.getChildren().add(btnShowInstructions);
         
-        ScrollPane sp = new ScrollPane();
         DialogPane dp = new DialogPane();
         
         Dialog info = new Dialog();
@@ -56,6 +56,7 @@ public class InstructionsPopupComponent extends Component {
         dp.getButtonTypes().add(loginButtonType);
         
         btnShowInstructions.setOnAction((ActionEvent event) -> {
+            WebView webView = new WebView();
             StringBuilder sb = new StringBuilder();
             try {
                 Path p = Paths.get("src/resources/Instructions.txt");
@@ -69,11 +70,9 @@ public class InstructionsPopupComponent extends Component {
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
-            Text t = new Text(sb.toString());
-            t.setStyle(assets.getLightGreenBackground());
-            sp.setContent(t);
-            sp.setStyle(assets.getLightGreenBackground());
-            dp.setContent(sp);
+            webView.getEngine().loadContent(sb.toString());
+            
+            dp.setContent(webView);
             info.setDialogPane(dp);
             info.showAndWait();
             

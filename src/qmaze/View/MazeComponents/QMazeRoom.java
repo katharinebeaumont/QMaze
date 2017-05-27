@@ -8,7 +8,7 @@ import qmaze.Environment.Coordinates;
  */
 public class QMazeRoom {
     private boolean open = true;
-    private double reward = 0;
+    private int reward = 0;
     private final Coordinates coordinates;
     private double percentageVisits = 0;
     private double visitCount = 0;
@@ -41,11 +41,11 @@ public class QMazeRoom {
         return open;
     }
     
-    public double getReward() {
+    public int getReward() {
         return reward;
     }
 
-    public void setReward(double reward) {
+    public void setReward(int reward) {
         this.reward = reward;
     }
     

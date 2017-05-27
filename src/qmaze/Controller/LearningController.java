@@ -70,8 +70,9 @@ public class LearningController {
             boolean open = r.getOpen();
             maze.setOpen(roomLocation, open);
             if (r.getReward() > 0) {
-                //TODO: eventually make configurable
-                maze.setGoalState(roomLocation);
+                //TODO: make configurable, so more that one room can have a reward
+                // So need a different way of signifying goal state
+                maze.setGoalState(roomLocation, r.getReward());
             }
         });
     }

@@ -1,17 +1,31 @@
 package qmaze.View;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 
 /**
  *
  * @author katharine
+ * Essentially a config class for themes etc. Ish.
  */
 public class Assets {
-    ImagePattern agent = new ImagePattern(new Image("/resources/agent.png"));
-    ImagePattern agentAtGoal = new ImagePattern(new Image("/resources/agentAtGoal.png"));
-    ImagePattern agentDeath = new ImagePattern(new Image("/resources/agentDeath.png")); 
-    ImagePattern goal = new ImagePattern(new Image("/resources/goal.png")); 
+    
+    private static Assets assets = new Assets();
+    
+    private Assets() { }
+    
+    private String theme = "Robot";
+    
+    public static Assets getInstance( ) {
+       return assets;
+    }
+    
+    private final String agent = "/agent.png";
+    private final String agentAtGoal = "/agentAtGoal.png";
+    private final String agentDeath = "/agentDeath.png";
+    private final String goal = "/goal.png";
     
     String learningPanelBackground = "-fx-background-color: #e4f9db";
     String unvisitedRoom = "-fx-background-color: #f2f9ef";
@@ -19,20 +33,30 @@ public class Assets {
     String whiteBackground = "-fx-background-color: #ffffff";
     String buttonPanelBackground = "-fx-background-color: #a5ea8a;";
     
+    public void setTheme(String theme) {
+        System.out.println("setting theme to " + theme + " for object " + this);
+        this.theme = theme;
+    }
+    
     public ImagePattern getAgentImage() {
-        return agent;
+        System.out.println("theme is " + theme + " for object " + this);
+        String path = "/resources/" + theme + agent;
+        return new ImagePattern(new Image(path));
     }
     
     public ImagePattern getAgentAtGoalImage() {
-        return agentAtGoal;
+        String path = "/resources/" + theme + agentAtGoal;
+        return new ImagePattern(new Image(path));
     }
         
     public ImagePattern getAgentDeathImage() {
-        return agentDeath;
+        String path = "/resources/" + theme + agentDeath;
+        return new ImagePattern(new Image(path));
     }
         
     public ImagePattern getGoalImage() {
-        return goal;
+        String path = "/resources/" + theme + goal;
+        return new ImagePattern(new Image(path));
     }
     
     public String getLightGreenBackground() {
@@ -53,5 +77,12 @@ public class Assets {
     
     public String getRichGreenBackground() {
         return buttonPanelBackground;
+    }
+    
+    public ObservableList<String> getAgentOptions() {
+        return FXCollections.observableArrayList(
+                "Robot",
+                "Sheep"
+        );
     }
 }

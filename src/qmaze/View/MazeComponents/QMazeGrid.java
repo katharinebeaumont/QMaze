@@ -51,8 +51,8 @@ public class QMazeGrid extends Component {
     private Coordinates startingState;
     private Coordinates goalState;
     private Coordinates agentLocation;
-    private String SET_START = "Set starting room";
-    private String SET_GOAL = "Set goal room";
+    private final String SET_START = "Set starting room";
+    private final String SET_GOAL = "Set goal room";
     
     public QMazeGrid(ViewController controller) {
         super(controller);

@@ -33,7 +33,7 @@ public class EpisodeTest {
         agentLP = new AgentLearningParameters(0.1,0.1,0.1);
         agent = new Agent(agentLP);
         maze = new Maze(maze_size,maze_size);
-        maze.setGoalState(goalState);
+        maze.setGoalState(goalState, 100);
     }
     
     @After

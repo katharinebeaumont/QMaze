@@ -23,7 +23,6 @@ import java.util.ArrayList;
  */
 public class Maze {
     
-    private static final int GOAL_REWARD = 100;
     private final ArrayList<Room> rooms;
     private Room goal;
     
@@ -49,9 +48,9 @@ public class Maze {
         r.open(open);
     }
     
-    public void setGoalState(Coordinates state) {
+    public void setGoalState(Coordinates state, int reward) {
         goal = getRoom(state);
-        goal.setReward(GOAL_REWARD);
+        goal.setReward(reward);
     }
     
     public boolean isGoalState(Coordinates state) {
