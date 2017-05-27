@@ -93,10 +93,10 @@ public class QMazeGrid extends Component {
 
     @Override
     public void reset() {
+        setAgentLocation(null);
         if (controller.STATE.equals(RESET_STATE) || controller.STATE.equals(ADJUST_PARAM_STATE)) {
             //Reset maze, according to controller's instructions
             initialiseMazeRooms();
-            setAgentLocation(null);
         }  
         if (controller.STATE.equals(TRAINED_STATE)) {
             //Show heatmap
@@ -105,7 +105,6 @@ public class QMazeGrid extends Component {
         }
         if (controller.STATE.equals(ADJUST_MAZE_STATE)) {
             //Clear heatmap
-            setAgentLocation(null);
             showVisitCount(new HashMap());
         }
         redrawMaze();

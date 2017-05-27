@@ -34,12 +34,10 @@ public class Assets {
     String buttonPanelBackground = "-fx-background-color: #a5ea8a;";
     
     public void setTheme(String theme) {
-        System.out.println("setting theme to " + theme + " for object " + this);
         this.theme = theme;
     }
     
     public ImagePattern getAgentImage() {
-        System.out.println("theme is " + theme + " for object " + this);
         String path = "/resources/" + theme + agent;
         return new ImagePattern(new Image(path));
     }
