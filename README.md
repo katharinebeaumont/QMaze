@@ -14,9 +14,9 @@ We find the goal with a trade off between exploration and exploitation. To get a
 
 ## Get started
 
-You will need: Java 8 and preferably, Netbeans which has support for JavaFX projects and Ant.
+You will need: [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) and preferably, [Netbeans](https://netbeans.org/) which has support for JavaFX projects and Ant.
 
-Either build the jar using build.xml, or run the project from src/qmaze/QMaze.java.
+Either build the jar using build.xml, then run `java -jar dist/QMaze.jar` or (in an IDE) run the project from src/qmaze/QMaze.java.
 
 ## Creating your maze
 
