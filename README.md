@@ -1,10 +1,22 @@
 # QMaze
 
+Build a maze! Teach your robot to navigate the maze, by playing with Q Learning configuration. Q Learning is 
+
+The basics: [see this great blog](http://mnemstudio.org/path-finding-q-learning-tutorial.htm).
+
+Dive in: [see this great book](https://mitpress.mit.edu/books/reinforcement-learning).
+
+## Reinforcement Learning?
+
+Yes. This is a branch of Machine Learning, considered distinct from Supervised and Unsupervised Learning.
+Instead of looking for hidden structure, like unsupervised Clustering algorithms, we're trying to maximise a reward structure. We have an agent (here, the robot) in an unknown environment (here, the maze). There is a goal that the agent needs to reach: when they do reach it, it's obvious.
+We find the goal with a trade off between exploration and exploitation. To get a lot of reward, the robot has to prefer actions that it has already tried and tested. But it has to explore to make better selections in the future.
+
+## Get started
+
 You will need: Java 8 and preferably, Netbeans which has support for JavaFX projects and Ant.
 
 Either build the jar using build.xml, or run the project from src/qmaze/QMaze.java.
-
-The basics: [see this great blog](http://mnemstudio.org/path-finding-q-learning-tutorial.htm).
 
 ## Creating your maze
 
