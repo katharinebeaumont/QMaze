@@ -1,0 +1,70 @@
+* Welcome! *
+
+This is a maze, 'the environment', that the agent will learn to make it's way through.
+There is one goal, in a room. Once the agent gets to the room, it will stop.
+In order to learn the best route to the room, the agent will try to find it by using a mix
+of exploration, and (if it has been in the room before) memory.
+
+
+* Configuring the maze *
+
+To open or close a room, hold down 'control' and click on the room.
+
+To change the starting position, or goal, click on the room and select the option.
+You can't make the starting position and the goal the same place!
+
+You might want to change the number of rows or columns, which you can do using the 
+'rows' and 'columns' selectors.
+
+
+* Training parameters *
+
+When we train the algorithm, we get a 'Q' value for each state and action. We take as 
+many steps as it takes to get to the goal, and once we reach the goal, it's an 'episode'.
+Training occurs over many episodes.
+If for step t, we move from room A to room B, we'd get a Q(A(t),B(t)).
+If we move back from room B to room A, we'd get a Q(B(t),A(t)). 
+You can describe it as:
+     Q(current state at this step, action I'll take from this step / next state).
+
+The equation is:
+Q(S(t), A(t)) ← Q(S(t), A(t)) + α [ R(t+1) + [γ * max Q(S(t+1), a) ] − Q(S(t), A(t)) ] . 
+So each time we make a step, we add the 
+   current Q value for the state,action pair (or 0 if there is none) 
+  to:
+  learning rate α x [ 
+      any reward I saw for moving into the next room
+   +  reward discount γ x 
+        (what is the highest value I can get for moving on from the next room?)
+   -  the current Q value for the state,action pair
+  ] 
+The 'Q' value is the memory.
+
+Aside from the state of the maze, the following will impact the agent training.
+'Probability Explore' is the probability that, at each training step, the agent
+will pick a random action. So 0.1 means there is 10% chance the agent will randomly
+pick a room - regardless of it's memory. The other 90% of the time, it will search 
+it's memory to see - do I remember what happened last time I was in this room? 
+Which is the best way forward? If there is no memory, then it defaults to randomly
+picking.
+'Reward Discount' is the 'gamma',γ, value in the Q learning equation. When building up
+the Q table, for each room we look at the best next action - the next room with the 
+highest value. We add this to the current room's value, but we multiply it by the
+reward discount first (as well as the learning rate, and a few other things). 
+This means that the closer to the goal state, the higher the value of the actions. 
+'Learning Rate' controls how much we increase the Q value each time: this is the 'alpha',α,
+value in the Q learning equation.
+
+
+* Once trained... *
+
+Pick a heat map colour to give you an idea of how much each room was visited.
+Darker colours mean that room was visited more.
+See how changing the 'Probability Explore' affects this.
+Press 'Show optimal path' to show the agent moving through the maze, in the 
+way that it reaches the goal with the most reward.
+
+
+* Problems? Bugs? Questions? *
+
+Please send a pull request! https://github.com/katharinebeaumont/QMaze

@@ -55,7 +55,7 @@ public class LearningGridComponent extends Component {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(10, 10, 10, 10));
-        grid.setStyle("-fx-background-color: #e4f9db"); 
+        grid.setStyle(assets.getLightGreenBackground()); 
         
         Set<Coordinates> roomCoordinates = roomLearnings.keySet();
         for (Coordinates roomCoordinate: roomCoordinates) {
@@ -74,11 +74,11 @@ public class LearningGridComponent extends Component {
             if (goalState.equals(roomCoordinate)) {
                 sb.append("GOAL");
                 toolTipText = "Yay!";
-                textPane.setStyle("-fx-background-color: #FFFF9A");
+                textPane.setStyle(assets.getGoalRoomBackground());
             } else if (actions == null || actions.isEmpty()) {
                 sb.append("No info");
                 toolTipText = "Maybe we didn't visit this room?";
-                textPane.setStyle("-fx-background-color: #f2f9ef");
+                textPane.setStyle(assets.getUnvisitedRoomBackground());
             }
             else {
                 for (HashMap.Entry<Coordinates,Double> entry : actions.entrySet()) {
@@ -87,7 +87,7 @@ public class LearningGridComponent extends Component {
                     sb.append(qValueForText);
                     sb.append(getArrowDirection(roomCoordinate, nextRoom));
                     sb.append("\n");
-                    textPane.setStyle("-fx-background-color: #ffffff");
+                    textPane.setStyle(assets.getWhiteBackground());
                     String qValueForToolTip = String.format("%.4f", entry.getValue());
                     toolTipText = toolTipText + "Moving " + getDirectionDesc(roomCoordinate, nextRoom) + " for " + qValueForToolTip + "\n";
                 }

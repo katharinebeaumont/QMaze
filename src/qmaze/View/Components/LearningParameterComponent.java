@@ -1,7 +1,6 @@
 package qmaze.View.Components;
 
 import qmaze.View.ViewController;
-import qmaze.View.Components.Component;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -12,6 +11,7 @@ import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.util.StringConverter;
 import qmaze.View.TrainingConfig;
 
 /**
@@ -23,6 +23,8 @@ public class LearningParameterComponent extends Component {
     private TrainingConfig config;
     
     private final int MAX_HEIGHT = 150;
+    private final int MAX_EPISODES = 250;
+    
     private final double initialGamma = 0.7;
     private final double initialEpsilon = 0.1;
     private final double initialAlpha = 0.1;
@@ -35,7 +37,7 @@ public class LearningParameterComponent extends Component {
     private final int initialEpisodes = 50;
     final SpinnerValueFactory.IntegerSpinnerValueFactory mazeSpinnerRows = new SpinnerValueFactory.IntegerSpinnerValueFactory(2,16,initialRows);
     final SpinnerValueFactory.IntegerSpinnerValueFactory mazeSpinnerColumns = new SpinnerValueFactory.IntegerSpinnerValueFactory(2,16,initialColumns);
-    final SpinnerValueFactory.IntegerSpinnerValueFactory mazeSpinnerEpisodes = new SpinnerValueFactory.IntegerSpinnerValueFactory(1,100,initialEpisodes);
+    final SpinnerValueFactory.IntegerSpinnerValueFactory mazeSpinnerEpisodes = new SpinnerValueFactory.IntegerSpinnerValueFactory(1,MAX_EPISODES,initialEpisodes);
 
     public LearningParameterComponent(ViewController controller) {
         super(controller);
@@ -44,20 +46,12 @@ public class LearningParameterComponent extends Component {
     
     private void resetConfig() {
         config = new TrainingConfig(mazeSpinnerEpisodes.getValue(), mazeSpinnerRows.getValue(), mazeSpinnerColumns.getValue(), gamma.getValue(), epsilon.getValue(), alpha.getValue());
-        controller.learningParameterReset(config);
+        controller.configReset(config);
     }
-    
-    @Override
-    public void reset() {
-        if (controller.STATE.equals(RESET_STATE)) {
-            gamma.setValue(initialGamma);
-            epsilon.setValue(initialEpsilon);
-            alpha.setValue(initialAlpha);
-            mazeSpinnerEpisodes.setValue(initialEpisodes);
-            mazeSpinnerRows.setValue(initialRows);
-            mazeSpinnerColumns.setValue(initialColumns);
-            resetConfig();    
-        }
+
+    private void resetEpisodes() {
+        config = new TrainingConfig(mazeSpinnerEpisodes.getValue(), mazeSpinnerRows.getValue(), mazeSpinnerColumns.getValue(), gamma.getValue(), epsilon.getValue(), alpha.getValue());
+        controller.episodesReset(config);
     }
     
     @Override
@@ -66,7 +60,7 @@ public class LearningParameterComponent extends Component {
         flow.setPadding(new Insets(5, 0, 5, 0));
         flow.setVgap(4);
         flow.setHgap(4);
-        flow.setStyle("-fx-background-color: #a5ea8a;");
+        flow.setStyle(assets.getRichGreenBackground());
         flow.setMaxHeight(MAX_HEIGHT);
         
         HBox hboxEp = buildSlider(epsilon, "Probability Explore", 1);
@@ -119,6 +113,8 @@ public class LearningParameterComponent extends Component {
         Spinner columnSpinner = new Spinner(mazeSpinnerColumns);
         Spinner episodeSpinner = new Spinner(mazeSpinnerEpisodes);
         episodeSpinner.setEditable(true);
+        addEpisodeValidation();
+        
         final Label labelRows = new Label("Rows");
         final Label labelCols = new Label("Columns");
         final Label labelEpisodes = new Label("Episodes");
@@ -129,11 +125,56 @@ public class LearningParameterComponent extends Component {
             resetConfig();   
         });
         episodeSpinner.valueProperty().addListener((obs, oldValue, newValue) -> {
-            mazeSpinnerEpisodes.setValue((int)newValue);
-            resetConfig();   
+            if (validEpisodeInput(newValue)) {
+                mazeSpinnerEpisodes.setValue((int)newValue);
+            } else {
+                mazeSpinnerEpisodes.setValue((int)oldValue);
+            }
+            resetEpisodes();
         });
+        
         
         hbox.getChildren().addAll(labelRows, rowSpinner, labelCols, columnSpinner, labelEpisodes, episodeSpinner);
         return hbox;
+    }
+
+    private boolean validEpisodeInput(Object newValue) {
+        return 0 < (int)newValue && (int)newValue <= MAX_EPISODES;
+    }
+    
+    private void addEpisodeValidation() {
+    
+        StringConverter<Integer> sc = new StringConverter<Integer>() {
+           @Override
+           public Integer fromString(String value)
+           {
+              try {
+                 return Integer.parseInt(value);
+              }
+              catch (NumberFormatException nfe) {
+                 System.out.println("Bad integer: " + value);
+                 return initialEpisodes;
+              }
+           }
+
+           @Override
+           public String toString(Integer value) {
+              return value.toString();
+           }
+        };
+        mazeSpinnerEpisodes.setConverter(sc);
+    }
+    
+    @Override
+    public void reset() {
+        if (controller.STATE.equals(RESET_STATE)) {
+            gamma.setValue(initialGamma);
+            epsilon.setValue(initialEpsilon);
+            alpha.setValue(initialAlpha);
+            mazeSpinnerEpisodes.setValue(initialEpisodes);
+            mazeSpinnerRows.setValue(initialRows);
+            mazeSpinnerColumns.setValue(initialColumns);
+            resetConfig();    
+        }
     }
 }

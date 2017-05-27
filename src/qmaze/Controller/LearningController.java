@@ -31,13 +31,15 @@ public class LearningController {
     private Agent agent;
     private AgentLearningParameters learningParameters;
     private HashMap<Coordinates, Integer> heatMap;
+    private static final int EXCEPTION_THRESHOLD = 20;
     
     public LearningController() {
         
     }
     
-    public void startLearning(ArrayList<QMazeRoom> rooms, int rows, int columns, Coordinates startingState, TrainingConfig mazeConfig) {
+    public void startLearning(ArrayList<QMazeRoom> rooms, int rows, int columns, Coordinates startingState, TrainingConfig mazeConfig) throws TrainingInterruptedException {
         
+        int exceptionCount = 0;
         heatMap = new HashMap();
         initialiseMaze(rooms, rows, columns);
         initialiseAgent(mazeConfig);
@@ -52,6 +54,10 @@ public class LearningController {
                 e.play();
             } catch (EpisodeInterruptedException ex) {
                 System.out.println(ex.getMessage());
+                exceptionCount++;
+                if (exceptionCount > EXCEPTION_THRESHOLD) {
+                    throw new TrainingInterruptedException("I've exceeded the failure threshold.");
+                }
             }
             buildHeatMap(e.getEpisodeSteps());
         }

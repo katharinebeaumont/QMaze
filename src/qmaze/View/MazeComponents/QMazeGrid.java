@@ -18,7 +18,6 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -43,7 +42,10 @@ public class QMazeGrid extends Component {
     private static final long ANIMATION_INTERVAL = 500;
     
     private ArrayList<QMazeRoom> rooms;
-    BorderPane background = new BorderPane();
+    BorderPane mainBackground = new BorderPane();
+    ScrollPane scrollPane = new ScrollPane();
+    BorderPane subBackground = new BorderPane();
+    
     private int rows;
     private int columns;
     private Coordinates startingState;
@@ -75,13 +77,16 @@ public class QMazeGrid extends Component {
                 rooms.add(room);
             }
         }
+        
+        scrollPane.setContent(subBackground);
+        mainBackground.setCenter(scrollPane);
     }
     
     private void redrawMaze() {
         
-        Node centreNode = background.getCenter();
+        Node centreNode = subBackground.getCenter();
         if (centreNode != null) {
-            background.getChildren().remove(centreNode);
+            subBackground.getChildren().remove(centreNode);
         }
         build();
     }
@@ -109,7 +114,6 @@ public class QMazeGrid extends Component {
     @Override
     public Pane build() {
         
-        ScrollPane sp = new ScrollPane();
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
@@ -148,9 +152,9 @@ public class QMazeGrid extends Component {
             
             if (roomLocation.equals(goalState)) {
                 if (hasAgent) {
-                    r2.setFill(images.getAgentAtGoal());
+                    r2.setFill(assets.getAgentAtGoalImage());
                 } else {
-                    r2.setFill(images.getGoal());
+                    r2.setFill(assets.getGoalImage());
                 }
                 //r2.setOpacity(0.4);
             } else if (roomLocation.equals(startingState) && !hasAgent) {
@@ -158,7 +162,7 @@ public class QMazeGrid extends Component {
                 stack.getChildren().add(new Label("X"));
             } 
             else if (hasAgent) {
-                r2.setFill(images.getAgent());
+                r2.setFill(assets.getAgentImage());
                 //r2.setOpacity(0.4);
             } else {
                 r2.setOpacity(0);
@@ -186,9 +190,8 @@ public class QMazeGrid extends Component {
             gridPane.add(stack, columnIndex, rowIndex);
         }
         
-        sp.setContent(gridPane);
-        background.setCenter(sp);
-        return background;
+        subBackground.setCenter(gridPane);
+        return mainBackground;
     }
 
     private void openOrCloseRoom(QMazeRoom room) {

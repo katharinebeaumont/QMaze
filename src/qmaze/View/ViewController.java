@@ -2,9 +2,14 @@ package qmaze.View;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 import qmaze.Controller.LearningController;
+import qmaze.Controller.TrainingInterruptedException;
 import qmaze.Environment.Coordinates;
+import qmaze.View.Components.AlertPopup;
 import qmaze.View.Components.Component;
 import qmaze.View.MazeComponents.QMazeGrid;
 
@@ -38,18 +43,19 @@ public class ViewController {
     public void register(Component component) {
         components.add(component);
     }
-    
-    public String getHeatMapColour() {
-        return heatMapColour;
-    }
-        
-    public TrainingConfig getQMazeConfig() {
-        return config;
-    }
-    
-    public void learningParameterReset(TrainingConfig config) {
+
+    /**
+     * State Resets
+     */
+    public void configReset(TrainingConfig config) {
         this.config = config;
         this.STATE = Component.ADJUST_PARAM_STATE;
+        reset();
+    }
+    
+    public void episodesReset(TrainingConfig config) {
+        this.config = config;
+        this.STATE = Component.ADJUST_MAZE_STATE;
         reset();
     }
     
@@ -75,15 +81,20 @@ public class ViewController {
         reset();
     }
 
+    /**
+     * Actions
+     */
     public void startTraining() {
-        this.STATE = Component.TRAINED_STATE;
         System.out.println("Training");
-        learningController.startLearning(maze.getRooms(), maze.getRows(), maze.getColumns(), maze.getStartingState(), config);
-        reset();
-    }
-    
-    public HashMap<Coordinates, Integer> getHeatMap() {
-         return learningController.getHeatMap();
+        String previousState = this.STATE;
+        try {
+           this.STATE = Component.TRAINED_STATE;
+           learningController.startLearning(maze.getRooms(), maze.getRows(), maze.getColumns(), maze.getStartingState(), config);
+           reset();
+        } catch (TrainingInterruptedException te) {
+            showAlert(te.getMessage());
+            this.STATE = previousState;
+        }
     }
     
     public void showOptimalPath() {
@@ -91,7 +102,14 @@ public class ViewController {
         ArrayList<Coordinates> optimalPath = learningController.getOptimalPath(maze.getStartingState());
         maze.animateMap(optimalPath);
     }
-
+    
+    private void showAlert(String message) {
+        AlertPopup.popup(message);
+    }
+    
+    /**
+     * Getters
+     */
     public Coordinates getGoalState() {
         if (maze == null) {
             return null;
@@ -111,4 +129,16 @@ public class ViewController {
         return maze.build();
     }
     
+    public String getHeatMapColour() {
+        return heatMapColour;
+    }
+        
+    public HashMap<Coordinates, Integer> getHeatMap() {
+         return learningController.getHeatMap();
+    }
+        
+    public TrainingConfig getQMazeConfig() {
+        return config;
+    }
+
 }

@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import qmaze.View.Assets;
 import qmaze.View.ViewController;
 import qmaze.View.Components.HeatMapComboComponent;
 import qmaze.View.Components.InstructionsPopupComponent;
@@ -32,6 +33,7 @@ import qmaze.View.Components.OptimalPathButtonComponent;
 public class QMaze extends Application {
 
     private BorderPane border;
+    private final Assets assets = new Assets();
     
     private final int SCREEN_WIDTH = 1200;
     private final int SCREEN_HEIGHT = 600;
@@ -63,7 +65,7 @@ public class QMaze extends Application {
         flow.setPadding(new Insets(5, 0, 5, 0));
         flow.setVgap(4);
         flow.setHgap(4);
-        flow.setStyle("-fx-background-color: #a5ea8a;");
+        flow.setStyle(assets.getRichGreenBackground());
         
         ViewController controller = new ViewController();
         

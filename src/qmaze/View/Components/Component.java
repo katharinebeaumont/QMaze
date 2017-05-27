@@ -1,7 +1,7 @@
 package qmaze.View.Components;
 
 import javafx.scene.layout.Pane;
-import qmaze.View.Images;
+import qmaze.View.Assets;
 import qmaze.View.ViewController;
 
 /**
@@ -12,7 +12,7 @@ import qmaze.View.ViewController;
 public abstract class Component {
     
     public final ViewController controller;
-    public final Images images = new Images();
+    public final Assets assets = new Assets();
     
     public Component(ViewController controller) {
         this.controller = controller;
