@@ -38,22 +38,22 @@ public class Assets {
     }
     
     public ImagePattern getAgentImage() {
-        String path = "/resources/" + theme + agent;
+        String path = theme + agent;
         return new ImagePattern(new Image(path));
     }
     
     public ImagePattern getAgentAtGoalImage() {
-        String path = "/resources/" + theme + agentAtGoal;
+        String path = theme + agentAtGoal;
         return new ImagePattern(new Image(path));
     }
         
     public ImagePattern getAgentDeathImage() {
-        String path = "/resources/" + theme + agentDeath;
+        String path = theme + agentDeath;
         return new ImagePattern(new Image(path));
     }
         
     public ImagePattern getGoalImage() {
-        String path = "/resources/" + theme + goal;
+        String path = theme + goal;
         return new ImagePattern(new Image(path));
     }
     
