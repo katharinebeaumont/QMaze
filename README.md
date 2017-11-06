@@ -16,7 +16,17 @@ We find the goal with a trade off between exploration and exploitation. To get a
 
 You will need: [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) and preferably, [Netbeans](https://netbeans.org/) which has support for JavaFX projects and Ant.
 
-Either build the jar using build.xml, then run `java -jar dist/QMaze.jar` or (in an IDE) run the project from src/qmaze/QMaze.java.
+Once you have coded things, either build the jar using build.xml, then run `java -jar dist/QMaze.jar` or (in an IDE) run the project from src/qmaze/QMaze.java.
+
+In the meantime, see a working version in example/QMaze.jar (run `java -jar example/QMaze.jar`). Try to get a feel for how the hyperparameters work.
+
+## Hyperparameters
+
+The Learning Rate controls how fast the robot builds up a memory of the rewards it encounters in the Q Table.
+
+Press 'Instructions' to see more information about these.
+
+Have a play with these, and see what the effect is on learning and the optimal path. (See 'Creating your maze' below for info on how to use the UI).
 
 ## Get coding!
 
@@ -28,9 +38,11 @@ Agent
 
 See hints.txt for... well, hints.
 
-See a working version in example/QMaze.jar (run `java -jar example/QMaze.jar`).
+
 
 ## Creating your maze
+
+The boxes act like rooms. Unless they are at the edge of the maze, they have 4 entrances: up, down, left, right.
 
 Increase/decrease the rows and columns using the sliders on the third row of buttons. 
 
@@ -44,13 +56,6 @@ Once trained, click 'Show optimal path' to show the robot moving through the maz
 
 Please note - if training is not complete, in that the Q Table doesn't have values for earlier rooms, the optimal path will still involve a high element of randomness, so the optimal path won't be consistent. This will happen with larger mazes.
 
-## Hyperparameters
-
-The Learning Rate controls how fast the robot builds up a memory of the rewards it encounters in the Q Table.
-
-Press 'Instructions' to see more information about these.
-
-Have a play with these, and see what the effect is on learning and the optimal path.
 
 ## Problems, bugs, feature requests, questions?
 
