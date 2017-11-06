@@ -35,24 +35,12 @@ public class AgentMemory {
         return currentState;
     }
     
+   /*
+    * TO DO: code me!
+    * For hints on the steps I need to take, see hints.txt
+    */
     public void updateMemory(Coordinates action, double reward) {
-        //Have I been in this room before?
-        HashMap nextSteps = mazeMemory.get(currentState);
-        //Nope, create blank slate
-        if (nextSteps == null) {
-            nextSteps = new HashMap();
-        }
-        
-        //Have I checked what's in the next rooms
-        Double rewardMemory = (Double)nextSteps.get(action);
-        //Nope, blank slate
-        if (rewardMemory == null) {
-            rewardMemory = new Double(0);
-        }
-        
-        //Store memory
-        nextSteps.put(action, (rewardMemory + reward));
-        mazeMemory.put(currentState, nextSteps);  
+        throw new RuntimeException("IMPLEMENT ME!");
     }
     
     public void move(Coordinates action) { 

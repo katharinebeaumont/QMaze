@@ -18,6 +18,18 @@ You will need: [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/
 
 Either build the jar using build.xml, then run `java -jar dist/QMaze.jar` or (in an IDE) run the project from src/qmaze/QMaze.java.
 
+## Get coding!
+
+Complete the code in:
+
+AgentMemory
+
+Agent
+
+See hints.txt for... well, hints.
+
+See a working version in example/QMaze.jar (run `java -jar example/QMaze.jar`).
+
 ## Creating your maze
 
 Increase/decrease the rows and columns using the sliders on the third row of buttons. 
@@ -42,4 +54,4 @@ Have a play with these, and see what the effect is on learning and the optimal p
 
 ## Problems, bugs, feature requests, questions?
 
-Open an issue or DM me on [Twitter](https://twitter.com/katharineCodes) for my e-mail address.
+Open an issue or tweet/DM me on [Twitter](https://twitter.com/katharineCodes) for my e-mail address.

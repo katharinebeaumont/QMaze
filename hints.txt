@@ -1,0 +1,46 @@
+AgentMemory.updateMemory()
+
+I need to consider:
+
+- Have I been in this room before?
+- Have I checked what's in the next rooms
+
+Then store the memory
+
+
+Agent.choseAction()
+
+I need to see if I should use my memory or explore.
+If I use my memory, but don't have anything in it, what should I default to?
+
+Consider creating 2 methods:
+action if explore
+action if use memory
+
+
+Agent.takeAction()
+
+This needs to:
+memory.rewardFromAction(location(), actionTaken);
+
+
+Q(S(t), A(t)) ← Q(S(t), A(t)) + α [ R(t+1) + γ max Q(S(t+1), a) − Q(S(t), A(t)) ].
+
+R(t+1) = the reward from taking the action
+** memory.rewardFromAction(.....);
+
+Q(S(t), A(t)) = current memory for moving from location (current) to the next one.
+
+Need to:
+        Get current Q(S(t), A(t))
+
+        Get reward, R(t+1)  
+        
+        Get Max[Q(next state, all possible (remembered!!!) actions)] - so, once we've moved into the next location (taken the action A(t) and moved into S(t+1))
+        what is the next best step? Get the value for that from memory.
+        
+        Get alpha and gamma
+       
+        Do alpha * (gamma * Max[Q(next state, all actions)] -  Q(S(t), A(t)))
+        
+        Don't forget - we're incrementing the current Q(S(t), A(t)), not replacing it.

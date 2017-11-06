@@ -27,7 +27,7 @@ Training occurs over many episodes.</p>
 <p>'Reward Discount' is the 'gamma', &gamma;, value in the Q learning equation. When building up the Q table, for each room we look at the best next action - the next room with the highest value. We add this to the current room's value, but we multiply it by thereward discount first (as well as the learning rate, and a few other things). This means that the closer to the goal state, the higher the value of the actions. </p>
 <p>'Learning Rate' controls how much we increase the Q value each time: this is the 'alpha', &alpha;,value in the Q learning equation.</p>
 <h4>Once trained...</h4>
-<p>Pick a heat map colour to give you an idea of how much each room was visited. Darker colours mean that room was visited more.See how changing the 'Probability Explore' affects this.</p>
+<p>Pick a heat map colour to give you an idea of how much each room was visited during training. Darker colours mean that room was visited more. See how changing the 'Probability Explore' affects this.</p>
 <p>Press 'Show optimal path' to show the agent moving through the maze, in the way that it reaches the goal with the most reward.</p>
 <h4>Problems? Bugs? Questions?</h4>
 <p>Please send a <a href="https://github.com/katharinebeaumont/QMaze/compare">pull request</a> or <a href="https://github.com/katharinebeaumont/QMaze/issues/new">raise an issue</a>!</p>

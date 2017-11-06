@@ -49,68 +49,20 @@ public class Agent {
             throw new NoWhereToGoException(memory.getCurrentState());
         }
         
+        //CODE TO SELECT NEXT ACTION
         Coordinates nextAction;
-        double useMemory = Math.random();
-        if (useMemory < learningParameters.getEpsilon()) {
-            nextAction = pickRandomAction(nextAvailableActions);
-        } else {
-            //Use learned values, but if there are none, it has to be random.
-            nextAction = pickBestActionOrRandom(nextAvailableActions);
-        }
         
-        return nextAction;
+        throw new RuntimeException("IMPLEMENT ME!");
     }
     
     public void takeAction(Coordinates actionTaken, double reward) {
                 
-        //Q(state, action) = R(state, action) + alpha * (Gamma * Max[Q(next state, all actions)] -  R(state, action))
-        
-        //R(state, action) 
-        double currentQValue = memory.rewardFromAction(location(), actionTaken);
-        
-        //Max[Q(next state, all actions)]
-        double estimatedBestFutureReward = 0;
-        ArrayList<Coordinates> actionsForFutureState = memory.actionsForState(actionTaken);
-        if (!actionsForFutureState.isEmpty()) {
-            Coordinates max_reward_from_subequent_action = pickBestActionOrRandom(actionsForFutureState);
-            estimatedBestFutureReward = memory.rewardFromAction(actionTaken, max_reward_from_subequent_action);
-        }    
-        
-        double alpha = learningParameters.getLearningRate();
-        double gamma = learningParameters.getGamma();
-        //alpha * (Gamma * Max[Q(next state, all actions)] -  R(state, action))
-        double qValue = (alpha * (reward + (gamma * estimatedBestFutureReward) - currentQValue));
-        //Adding R(state, action) when we update
+        double qValue = 0; //TO WORK OUT!!!!
         memory.updateMemory(actionTaken, qValue);
         memory.move(actionTaken);
+        throw new RuntimeException("IMPLEMENT ME!");
     }
     
-    private Coordinates pickRandomAction(ArrayList<Coordinates> actions) {
-        int options = actions.size();
-        int choice = (int)(Math.random() * options);
-        return actions.get(choice);
-    }
-    
-    private Coordinates pickBestActionOrRandom(ArrayList<Coordinates> actions) {
-        //There might be more than one best action
-        ArrayList<Coordinates> bestActions = new ArrayList();
-        double highestReward = 0;
-        for (Coordinates action: actions) {
-            double rewardMemory = memory.rewardFromAction(location(), action);
-            if (rewardMemory > highestReward) {
-                //Clear out any previous candidates for best action
-                highestReward = rewardMemory;
-                bestActions = new ArrayList();
-                bestActions.add(action);
-            }
-            if (rewardMemory == highestReward) {
-                //This means that bestActions could just contain zero reward actions,
-                // in which case we're behaving the same as pickRandomAction(actions).
-                bestActions.add(action);
-            }
-        }
-        return pickRandomAction(bestActions);
-    }
     
     public AgentMemory getMemory() {
         return memory;
