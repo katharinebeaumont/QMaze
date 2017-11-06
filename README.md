@@ -38,7 +38,7 @@ Agent
 
 See hints.txt for... well, hints.
 
-
+Extras? Add some artwork! Check out the Assets class.
 
 ## Creating your maze
 
