@@ -2,6 +2,8 @@ package qmaze.Agent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+
 import qmaze.Environment.Coordinates;
         
 /**
@@ -40,6 +42,9 @@ public class AgentMemory {
     * For hints on the steps I need to take, see hints.txt
     */
     public void updateMemory(Coordinates action, double reward) {
+        for (Map.Entry<Coordinates, HashMap<Coordinates, Double>> e: mazeMemory.entrySet()) {
+            e.getValue().put(action, reward);
+        }
         throw new RuntimeException("IMPLEMENT ME!");
     }
     
