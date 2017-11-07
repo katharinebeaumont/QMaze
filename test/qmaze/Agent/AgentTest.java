@@ -71,6 +71,28 @@ public class AgentTest {
         assertTrue(result.equals(nextAction1) || result.equals(nextAction2));
     }
 
+    @Test
+    public void testChooseActionWithLargestRewardWhenExploiting() throws Exception {
+        // Epsilon is zero => favor exploit over explore
+        AgentLearningParameters learningParametersWhichFavorExploiting
+                = new AgentLearningParameters(0.0, 0.1, 0.7);
+
+        Coordinates nextAction1 = new Coordinates(1, 0);
+        Coordinates nextAction2 = new Coordinates(0, 1);
+        ArrayList<Coordinates> nextAvailableActions = new ArrayList();
+        nextAvailableActions.add(nextAction1);
+        nextAvailableActions.add(nextAction2);
+        Agent agent = new Agent(learningParametersWhichFavorExploiting);
+        agent.start(new Coordinates(0, 0));
+
+        // The reward for nextAction1 is larger than for nextAction2
+        agent.getMemory().updateMemory(nextAction1, 1.0);
+        agent.getMemory().updateMemory(nextAction2, 0.0);
+
+        Coordinates result = agent.chooseAction(nextAvailableActions);
+        assertTrue(result.equals(nextAction1));
+    }
+
     /**
      * Test of takeAction method, of class Agent.
      */
