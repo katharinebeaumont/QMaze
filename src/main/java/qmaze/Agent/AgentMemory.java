@@ -2,6 +2,7 @@ package qmaze.Agent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import qmaze.Environment.Coordinates;
 import lombok.Getter;
@@ -56,7 +57,7 @@ public class AgentMemory {
     }
     
     //What do I remember about future actions>
-    public ArrayList<Coordinates> actionsForState(Coordinates state) {
+    public List<Coordinates> actionsForState(Coordinates state) {
         Map<Coordinates, Double> nextSteps = mazeMemory.get(state);
         if (nextSteps == null) {
             return new ArrayList<>();

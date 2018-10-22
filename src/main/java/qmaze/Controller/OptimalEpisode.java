@@ -1,6 +1,7 @@
 package qmaze.Controller;
 
 import java.util.ArrayList;
+import java.util.List;
 import qmaze.Agent.Agent;
 import qmaze.Agent.AgentLearningParameters;
 import qmaze.Environment.Coordinates;
@@ -16,7 +17,7 @@ public class OptimalEpisode extends Episode {
         super(agent,maze,startingState);
     }
     
-    public ArrayList<Coordinates> findOptimalPath() throws EpisodeInterruptedException {
+    public List<Coordinates> findOptimalPath() throws EpisodeInterruptedException {
         
         AgentLearningParameters originalLearningParameters = agent.getLearningParameters();
         haltExploration(originalLearningParameters);

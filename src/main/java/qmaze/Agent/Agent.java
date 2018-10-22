@@ -1,6 +1,7 @@
 package qmaze.Agent;
 
 import java.util.ArrayList;
+import java.util.List;
 import qmaze.Environment.Coordinates;
 
 /**
@@ -42,7 +43,7 @@ public class Agent {
         memory.move(nextState);
     }
         
-    public Coordinates chooseAction(ArrayList<Coordinates> nextAvailableActions) throws NoWhereToGoException {
+    public Coordinates chooseAction(List<Coordinates> nextAvailableActions) throws NoWhereToGoException {
          //What if there are no available actions?
         // Should this validation happen further up...
         if (nextAvailableActions.isEmpty()) {
@@ -70,7 +71,7 @@ public class Agent {
         
         //Max[Q(next state, all actions)]
         double estimatedBestFutureReward = 0;
-        ArrayList<Coordinates> actionsForFutureState = memory.actionsForState(actionTaken);
+        List<Coordinates> actionsForFutureState = memory.actionsForState(actionTaken);
         if (!actionsForFutureState.isEmpty()) {
             Coordinates max_reward_from_subequent_action = pickBestActionOrRandom(actionsForFutureState);
             estimatedBestFutureReward = memory.rewardFromAction(actionTaken, max_reward_from_subequent_action);
@@ -85,15 +86,15 @@ public class Agent {
         memory.move(actionTaken);
     }
     
-    private Coordinates pickRandomAction(ArrayList<Coordinates> actions) {
+    private Coordinates pickRandomAction(List<Coordinates> actions) {
         int options = actions.size();
         int choice = (int)(Math.random() * options);
         return actions.get(choice);
     }
     
-    private Coordinates pickBestActionOrRandom(ArrayList<Coordinates> actions) {
+    private Coordinates pickBestActionOrRandom(List<Coordinates> actions) {
         //There might be more than one best action
-        ArrayList<Coordinates> bestActions = new ArrayList<>();
+        List<Coordinates> bestActions = new ArrayList<>();
         double highestReward = 0;
         for (Coordinates action: actions) {
             double rewardMemory = memory.rewardFromAction(location(), action);

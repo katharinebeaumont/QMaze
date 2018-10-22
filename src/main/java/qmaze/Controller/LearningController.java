@@ -2,6 +2,7 @@ package qmaze.Controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import qmaze.Agent.Agent;
 import qmaze.Agent.AgentLearningParameters;
@@ -38,7 +39,7 @@ public class LearningController {
     private Map<Coordinates, Integer> heatMap;
     private static final int EXCEPTION_THRESHOLD = 20;
     
-    public void startLearning(ArrayList<QMazeRoom> rooms, int rows, int columns, Coordinates startingState, TrainingConfig mazeConfig) throws TrainingInterruptedException {
+    public void startLearning(List<QMazeRoom> rooms, int rows, int columns, Coordinates startingState, TrainingConfig mazeConfig) throws TrainingInterruptedException {
         
         int exceptionCount = 0;
         heatMap = new HashMap<>();
@@ -64,7 +65,7 @@ public class LearningController {
         }
     }
     
-    public void initialiseMaze(ArrayList<QMazeRoom> rooms, int rows, int columns) {
+    public void initialiseMaze(List<QMazeRoom> rooms, int rows, int columns) {
         maze = new Maze(rows, columns);
         rooms.forEach((r) -> {
             Coordinates roomLocation = new Coordinates(r.getCoordinates());
@@ -83,7 +84,7 @@ public class LearningController {
         agent = new Agent(learningParameters);
     }
       
-    public Map<Coordinates, Map<Coordinates,Double>> getLearnings(ArrayList<QMazeRoom> rooms) {
+    public Map<Coordinates, Map<Coordinates,Double>> getLearnings(List<QMazeRoom> rooms) {
          
         Map<Coordinates, Map<Coordinates,Double>> learning = new HashMap<>();
         if (agent == null) {
@@ -95,7 +96,7 @@ public class LearningController {
             Coordinates roomLocation = r.getCoordinates();
             if (r.getOpen()) {
                 Map<Coordinates,Double> rewardFromRoom = new HashMap<>();
-                ArrayList<Coordinates> potentialActions = memory.actionsForState(roomLocation);
+                List<Coordinates> potentialActions = memory.actionsForState(roomLocation);
                 for (Coordinates action: potentialActions) {
                     double reward = memory.rewardFromAction(roomLocation, action);
                     rewardFromRoom.put(action, reward);
@@ -106,9 +107,9 @@ public class LearningController {
         return learning;
     }
     
-    public ArrayList<Coordinates> getOptimalPath(Coordinates startingState) {
+    public List<Coordinates> getOptimalPath(Coordinates startingState) {
         OptimalEpisode e = new OptimalEpisode(agent, maze, startingState);
-        ArrayList<Coordinates> optimalPath = new ArrayList<>();
+        List<Coordinates> optimalPath = new ArrayList<>();
         
         try { 
             optimalPath = e.findOptimalPath();
@@ -119,7 +120,7 @@ public class LearningController {
         return optimalPath;
     }
 
-    private void buildHeatMap(ArrayList<Coordinates> episodeSteps) {
+    private void buildHeatMap(List<Coordinates> episodeSteps) {
         for (Coordinates roomVisited: episodeSteps) {
             
             Integer roomVisitCount = heatMap.get(roomVisited);

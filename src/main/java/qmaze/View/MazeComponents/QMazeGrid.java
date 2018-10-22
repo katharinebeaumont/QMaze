@@ -3,6 +3,7 @@ package qmaze.View.MazeComponents;
 import qmaze.View.TrainingConfig;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -45,7 +46,7 @@ public class QMazeGrid extends Component {
     private static final long ANIMATION_INTERVAL = 500;
 
     @Getter
-    private ArrayList<QMazeRoom> rooms;
+    private List<QMazeRoom> rooms;
     private BorderPane mainBackground = new BorderPane();
     private ScrollPane scrollPane = new ScrollPane();
     private BorderPane subBackground = new BorderPane();
@@ -321,7 +322,7 @@ public class QMazeGrid extends Component {
         return fillColor;
     }
     
-    public void animateMap(ArrayList<Coordinates> optimalPath) {
+    public void animateMap(List<Coordinates> optimalPath) {
         
         animateAgent(startingState);
 

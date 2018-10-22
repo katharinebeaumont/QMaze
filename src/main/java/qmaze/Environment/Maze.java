@@ -1,6 +1,7 @@
 package qmaze.Environment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *TODO: consistently do x,y or coordinates
@@ -23,7 +24,7 @@ import java.util.ArrayList;
  */
 public class Maze {
     
-    private final ArrayList<Room> rooms;
+    private final List<Room> rooms;
     private Room goal;
     
     public Maze(int rows, int columns) {
@@ -72,9 +73,9 @@ public class Maze {
         }
     }
     
-    public ArrayList<Coordinates> getAdjoiningStates(Coordinates state) {
+    public List<Coordinates> getAdjoiningStates(Coordinates state) {
         Room r = getRoom(state);
-        ArrayList<Coordinates> adjoiningRooms = new ArrayList<>();
+        List<Coordinates> adjoiningRooms = new ArrayList<>();
         rooms.stream().filter((otherRoom) -> (otherRoom.isOpen() && otherRoom.adjoins(r))).forEachOrdered((otherRoom) -> {
             adjoiningRooms.add(new Coordinates(otherRoom.getX(), otherRoom.getY()));
         });

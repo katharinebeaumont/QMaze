@@ -1,6 +1,7 @@
 package qmaze.Agent;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -67,7 +68,7 @@ public class AgentMemoryTest {
         //SS : S1,0
         AgentMemory memory = new AgentMemory();
         memory.setCurrentState(startingState);
-        ArrayList actionsFromStartingState = memory.actionsForState(startingState);
+        List actionsFromStartingState = memory.actionsForState(startingState);
         assertTrue(actionsFromStartingState.isEmpty());
         memory.updateMemory(stateOne, 0);
         actionsFromStartingState = memory.actionsForState(startingState);
@@ -77,7 +78,7 @@ public class AgentMemoryTest {
         //S1 : SS,0
         assertEquals(0, memory.rewardFromAction(startingState, stateOne), 0);
         memory.move(stateOne);
-        ArrayList actionsFromStateOne = memory.actionsForState(stateOne);
+        List actionsFromStateOne = memory.actionsForState(stateOne);
         assertTrue(actionsFromStateOne.isEmpty());
         memory.updateMemory(startingState, 0);
         actionsFromStateOne = memory.actionsForState(stateOne);
@@ -97,7 +98,7 @@ public class AgentMemoryTest {
         memory.move(stateTwo);
         
         //S2 : GS,100
-        ArrayList actionsFromStateTwo = memory.actionsForState(stateTwo);
+        List actionsFromStateTwo = memory.actionsForState(stateTwo);
         assertTrue(actionsFromStateTwo.isEmpty());
         memory.updateMemory(goalState, 100);
         actionsFromStateTwo = memory.actionsForState(stateTwo);

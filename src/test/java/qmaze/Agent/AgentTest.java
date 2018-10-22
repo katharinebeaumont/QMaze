@@ -1,6 +1,7 @@
 package qmaze.Agent;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -46,7 +47,7 @@ public class AgentTest {
     public void testChooseActionWhenOnlyOne() throws Exception {
         System.out.println("chooseAction");
         Coordinates nextAction = new Coordinates(1,0);
-        ArrayList<Coordinates> nextAvailableActions = new ArrayList();
+        List<Coordinates> nextAvailableActions = new ArrayList<>();
         nextAvailableActions.add(nextAction);
         Agent agent = new Agent(learningParameters);
         agent.start(new Coordinates(0,0));
@@ -62,7 +63,7 @@ public class AgentTest {
 
         Coordinates nextAction1 = new Coordinates(1,0);
         Coordinates nextAction2 = new Coordinates(0,1);
-        ArrayList<Coordinates> nextAvailableActions = new ArrayList();
+        List<Coordinates> nextAvailableActions = new ArrayList<>();
         nextAvailableActions.add(nextAction1);
         nextAvailableActions.add(nextAction2);
         Agent agent = new Agent(learningParameters);

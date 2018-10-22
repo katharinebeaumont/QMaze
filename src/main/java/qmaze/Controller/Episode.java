@@ -1,6 +1,7 @@
 package qmaze.Controller;
 
 import java.util.ArrayList;
+import java.util.List;
 import qmaze.Agent.Agent;
 import qmaze.Agent.NoWhereToGoException;
 import qmaze.Environment.Coordinates;
@@ -21,7 +22,7 @@ public class Episode {
     final Coordinates startingState;
 
     @Getter
-    ArrayList<Coordinates> episodeSteps;
+    List<Coordinates> episodeSteps;
     
     public Episode(Agent agent, Maze maze, Coordinates startingState) {
         this.agent = agent;
@@ -57,7 +58,7 @@ public class Episode {
         //Where is the agent?
         Coordinates currentState = agent.location();
         //Have a look around the maze
-        ArrayList<Coordinates> adjoiningStates = maze.getAdjoiningStates(currentState);
+        List<Coordinates> adjoiningStates = maze.getAdjoiningStates(currentState);
         //Decide on action
         Coordinates action;
         try {

@@ -2,6 +2,7 @@ package qmaze.View;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javafx.scene.layout.Pane;
 import qmaze.Controller.LearningController;
@@ -29,7 +30,7 @@ public class ViewController {
     private TrainingConfig config;
     private String heatMapColour = "None";
     
-    private ArrayList<Component> components;
+    private List<Component> components;
     private QMazeGrid maze;
     
     public ViewController() {
@@ -95,7 +96,7 @@ public class ViewController {
     
     public void showOptimalPath() {
         System.out.println("Finding optimal path...");
-        ArrayList<Coordinates> optimalPath = learningController.getOptimalPath(maze.getStartingState());
+        List<Coordinates> optimalPath = learningController.getOptimalPath(maze.getStartingState());
         maze.animateMap(optimalPath);
     }
     
