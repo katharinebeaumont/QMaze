@@ -2,6 +2,7 @@ package qmaze.Controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import qmaze.Agent.Agent;
 import qmaze.Agent.AgentLearningParameters;
 import qmaze.Agent.AgentMemory;
@@ -9,6 +10,7 @@ import qmaze.Environment.Coordinates;
 import qmaze.Environment.Maze;
 import qmaze.View.TrainingConfig;
 import qmaze.View.MazeComponents.QMazeRoom;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
@@ -32,7 +34,8 @@ public class LearningController {
     private Maze maze;
     private Agent agent;
     private AgentLearningParameters learningParameters;
-    private HashMap<Coordinates, Integer> heatMap;
+    @Getter
+    private Map<Coordinates, Integer> heatMap;
     private static final int EXCEPTION_THRESHOLD = 20;
     
     public void startLearning(ArrayList<QMazeRoom> rooms, int rows, int columns, Coordinates startingState, TrainingConfig mazeConfig) throws TrainingInterruptedException {
@@ -80,9 +83,9 @@ public class LearningController {
         agent = new Agent(learningParameters);
     }
       
-    public HashMap<Coordinates, HashMap<Coordinates,Double>> getLearnings(ArrayList<QMazeRoom> rooms) {
+    public Map<Coordinates, Map<Coordinates,Double>> getLearnings(ArrayList<QMazeRoom> rooms) {
          
-        HashMap<Coordinates, HashMap<Coordinates,Double>> learning = new HashMap<>();
+        Map<Coordinates, Map<Coordinates,Double>> learning = new HashMap<>();
         if (agent == null) {
             return learning;
         }
@@ -91,7 +94,7 @@ public class LearningController {
         rooms.forEach((r) -> {
             Coordinates roomLocation = r.getCoordinates();
             if (r.getOpen()) {
-                HashMap<Coordinates,Double> rewardFromRoom = new HashMap<>();
+                Map<Coordinates,Double> rewardFromRoom = new HashMap<>();
                 ArrayList<Coordinates> potentialActions = memory.actionsForState(roomLocation);
                 for (Coordinates action: potentialActions) {
                     double reward = memory.rewardFromAction(roomLocation, action);
@@ -126,9 +129,5 @@ public class LearningController {
             roomVisitCount++;
             heatMap.put(roomVisited, roomVisitCount);
         }
-    }
-    
-    public HashMap<Coordinates, Integer> getHeatMap() {
-        return heatMap;
     }
 }

@@ -2,6 +2,7 @@ package qmaze.View.Components;
 
 import qmaze.View.ViewController;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -28,7 +29,7 @@ public class LearningGridComponent extends Component {
     
     @Override
     public Pane build() {
-        HashMap<Coordinates, HashMap<Coordinates,Double>> roomLearnings = controller.getLearnings();
+        Map<Coordinates, Map<Coordinates,Double>> roomLearnings = controller.getLearnings();
         Coordinates goalState = controller.getGoalState();
         return addQTable(roomLearnings, goalState);
     }
@@ -43,7 +44,7 @@ public class LearningGridComponent extends Component {
         }
     }
     
-    private Pane addQTable(HashMap<Coordinates, HashMap<Coordinates,Double>> roomLearnings, Coordinates goalState) {
+    private Pane addQTable(Map<Coordinates, Map<Coordinates,Double>> roomLearnings, Coordinates goalState) {
         
         if (roomLearnings.isEmpty()) {
             return border;
@@ -69,7 +70,7 @@ public class LearningGridComponent extends Component {
             sb.append(",");
             sb.append(columnIndex);
             sb.append("\n");
-            HashMap<Coordinates,Double> actions = roomLearnings.get(roomCoordinate);
+            Map<Coordinates,Double> actions = roomLearnings.get(roomCoordinate);
             StringBuilder toolTipText = new StringBuilder();
             if (goalState.equals(roomCoordinate)) {
                 sb.append("GOAL");
@@ -81,7 +82,7 @@ public class LearningGridComponent extends Component {
                 textPane.setStyle(assets.getUnvisitedRoomBackground());
             }
             else {
-                for (HashMap.Entry<Coordinates,Double> entry : actions.entrySet()) {
+                for (Map.Entry<Coordinates,Double> entry : actions.entrySet()) {
                     Coordinates nextRoom = entry.getKey();
                     String qValueForText = String.format("%.2f", entry.getValue());
                     sb.append(qValueForText);

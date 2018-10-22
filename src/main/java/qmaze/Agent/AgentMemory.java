@@ -2,6 +2,7 @@ package qmaze.Agent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import qmaze.Environment.Coordinates;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AgentMemory {
     
-    private HashMap<Coordinates, HashMap<Coordinates, Double>> mazeMemory = new HashMap<>();
+    private Map<Coordinates, Map<Coordinates, Double>> mazeMemory = new HashMap<>();
 
     @Setter
     @Getter
@@ -32,14 +33,14 @@ public class AgentMemory {
     
     public void updateMemory(Coordinates action, double reward) {
         //Have I been in this room before?
-        HashMap<Coordinates, Double> nextSteps = mazeMemory.get(currentState);
+        Map<Coordinates, Double> nextSteps = mazeMemory.get(currentState);
         //Nope, create blank slate
         if (nextSteps == null) {
             nextSteps = new HashMap<>();
         }
         
         //Have I checked what's in the next rooms
-        Double rewardMemory = (Double)nextSteps.get(action);
+        Double rewardMemory = nextSteps.get(action);
         //Nope, blank slate
         if (rewardMemory == null) {
             rewardMemory = (double) 0;
@@ -56,7 +57,7 @@ public class AgentMemory {
     
     //What do I remember about future actions>
     public ArrayList<Coordinates> actionsForState(Coordinates state) {
-        HashMap<Coordinates, Double> nextSteps = mazeMemory.get(state);
+        Map<Coordinates, Double> nextSteps = mazeMemory.get(state);
         if (nextSteps == null) {
             return new ArrayList<>();
         }
@@ -64,13 +65,13 @@ public class AgentMemory {
     }
     
     public double rewardFromAction(Coordinates state, Coordinates action) {
-        HashMap nextSteps = mazeMemory.get(state);
+        Map<Coordinates, Double> nextSteps = mazeMemory.get(state);
         //Nope, no memory of next steps
         if (nextSteps == null) {
             return 0;
         }
        
-        Double rewardMemory = (Double)nextSteps.get(action);
+        Double rewardMemory = nextSteps.get(action);
         //Nope, no memory of moving into this room.
         if (rewardMemory == null) {
             return 0;

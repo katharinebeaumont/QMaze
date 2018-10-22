@@ -3,6 +3,7 @@ package qmaze.View.MazeComponents;
 import qmaze.View.TrainingConfig;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javafx.animation.KeyFrame;
@@ -110,7 +111,7 @@ public class QMazeGrid extends Component {
         }  
         if (controller.STATE.equals(TRAINED_STATE)) {
             //Show heatmap
-            HashMap<Coordinates, Integer> heatMap = controller.getHeatMap();
+            Map<Coordinates, Integer> heatMap = controller.getHeatMap();
             showVisitCount(heatMap);
         }
         if (controller.STATE.equals(ADJUST_MAZE_STATE)) {
@@ -245,7 +246,7 @@ public class QMazeGrid extends Component {
     /**
      * Animation/heatmap stuff
      */
-    public void showVisitCount(HashMap<Coordinates, Integer> heatMap) {
+    public void showVisitCount(Map<Coordinates, Integer> heatMap) {
     
         if (heatMap == null) {
             return;
@@ -269,7 +270,7 @@ public class QMazeGrid extends Component {
         redrawMaze();
     }
     
-    private double getTotalVisitCount(HashMap<Coordinates, Integer> heatMap) {
+    private double getTotalVisitCount(Map<Coordinates, Integer> heatMap) {
         double totalVisits = 0;
         Set<Coordinates> keys = heatMap.keySet();
         for (Coordinates key: keys) {
@@ -279,7 +280,7 @@ public class QMazeGrid extends Component {
         return totalVisits;
     }
     
-    private double getHighestVisitCount(HashMap<Coordinates, Integer> heatMap) {
+    private double getHighestVisitCount(Map<Coordinates, Integer> heatMap) {
         int highestVisit = 0;
         Set<Coordinates> keys = heatMap.keySet();
         for (Coordinates key: keys) {

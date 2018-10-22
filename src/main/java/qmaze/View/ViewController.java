@@ -2,6 +2,7 @@ package qmaze.View;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import javafx.scene.layout.Pane;
 import qmaze.Controller.LearningController;
 import qmaze.Controller.TrainingInterruptedException;
@@ -112,7 +113,7 @@ public class ViewController {
         return maze.getGoalState();
     }
 
-    public HashMap<Coordinates, HashMap<Coordinates, Double>> getLearnings() {
+    public Map<Coordinates, Map<Coordinates, Double>> getLearnings() {
         if (maze == null) {
             return new HashMap<>();
         }
@@ -128,7 +129,7 @@ public class ViewController {
         return heatMapColour;
     }
         
-    public HashMap<Coordinates, Integer> getHeatMap() {
+    public Map<Coordinates, Integer> getHeatMap() {
          return learningController.getHeatMap();
     }
         
