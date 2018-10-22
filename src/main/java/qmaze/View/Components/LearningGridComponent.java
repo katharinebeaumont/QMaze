@@ -1,9 +1,5 @@
 package qmaze.View.Components;
 
-import qmaze.View.ViewController;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -14,54 +10,57 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import qmaze.Environment.Coordinates;
+import qmaze.View.ViewController;
+import java.util.Map;
+import java.util.Set;
 
 /**
- *
  * @author katharine
  */
 public class LearningGridComponent extends Component {
 
     private BorderPane border = new BorderPane();
-    
+
     public LearningGridComponent(ViewController controller) {
         super(controller);
     }
-    
+
     @Override
     public Pane build() {
-        Map<Coordinates, Map<Coordinates,Double>> roomLearnings = controller.getLearnings();
+        Map<Coordinates, Map<Coordinates, Double>> roomLearnings = controller.getLearnings();
         Coordinates goalState = controller.getGoalState();
         return addQTable(roomLearnings, goalState);
     }
-    
+
     @Override
     public void reset() {
         if (controller.STATE.equals(TRAINED_STATE)) {
             build();
         } else {
             Node qTable = border.getCenter();
-            border.getChildren().remove(qTable);
+            border.getChildren()
+                    .remove(qTable);
         }
     }
-    
-    private Pane addQTable(Map<Coordinates, Map<Coordinates,Double>> roomLearnings, Coordinates goalState) {
-        
+
+    private Pane addQTable(Map<Coordinates, Map<Coordinates, Double>> roomLearnings, Coordinates goalState) {
+
         if (roomLearnings.isEmpty()) {
             return border;
         }
         ScrollPane sp = new ScrollPane();
-        
+
         GridPane grid = new GridPane();
         grid.setBorder(Border.EMPTY);
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(10, 10, 10, 10));
-        grid.setStyle(assets.getLightGreenBackground()); 
-        
+        grid.setStyle(assets.getLightGreenBackground());
+
         Set<Coordinates> roomCoordinates = roomLearnings.keySet();
-        for (Coordinates roomCoordinate: roomCoordinates) {
+        for (Coordinates roomCoordinate : roomCoordinates) {
             Pane textPane = new Pane();
-            
+
             int columnIndex = roomCoordinate.getX();
             int rowIndex = roomCoordinate.getY();
             StringBuilder sb = new StringBuilder();
@@ -70,7 +69,7 @@ public class LearningGridComponent extends Component {
             sb.append(",");
             sb.append(columnIndex);
             sb.append("\n");
-            Map<Coordinates,Double> actions = roomLearnings.get(roomCoordinate);
+            Map<Coordinates, Double> actions = roomLearnings.get(roomCoordinate);
             StringBuilder toolTipText = new StringBuilder();
             if (goalState.equals(roomCoordinate)) {
                 sb.append("GOAL");
@@ -80,9 +79,8 @@ public class LearningGridComponent extends Component {
                 sb.append("No info");
                 toolTipText = new StringBuilder("Maybe we didn't visit this room?");
                 textPane.setStyle(assets.getUnvisitedRoomBackground());
-            }
-            else {
-                for (Map.Entry<Coordinates,Double> entry : actions.entrySet()) {
+            } else {
+                for (Map.Entry<Coordinates, Double> entry : actions.entrySet()) {
                     Coordinates nextRoom = entry.getKey();
                     String qValueForText = String.format("%.2f", entry.getValue());
                     sb.append(qValueForText);
@@ -98,14 +96,15 @@ public class LearningGridComponent extends Component {
                 }
             }
             Text t = new Text(sb.toString());
-            
+
             Tooltip tp = new Tooltip(toolTipText.toString());
             Tooltip.install(textPane, tp);
-                    
-            textPane.getChildren().add(t);
-            textPane.setMinSize(60,60);
-            textPane.setMaxSize(70,70);
-            
+
+            textPane.getChildren()
+                    .add(t);
+            textPane.setMinSize(60, 60);
+            textPane.setMaxSize(70, 70);
+
             grid.add(textPane, columnIndex, rowIndex);
         }
         sp.setContent(grid);
@@ -114,7 +113,7 @@ public class LearningGridComponent extends Component {
         border.setCenter(sp);
         return border;
     }
-    
+
     private String getArrowDirection(Coordinates currentRoom, Coordinates nextRoom) {
         int currentRow = currentRoom.getY();
         int currentColumn = currentRoom.getX();
@@ -131,7 +130,7 @@ public class LearningGridComponent extends Component {
         }
         return nextRoom.toString();
     }
-    
+
     private String getDirectionDesc(Coordinates currentRoom, Coordinates nextRoom) {
         int currentRow = currentRoom.getY();
         int currentColumn = currentRoom.getX();
@@ -148,5 +147,4 @@ public class LearningGridComponent extends Component {
         }
         return nextRoom.toString();
     }
-    
 }

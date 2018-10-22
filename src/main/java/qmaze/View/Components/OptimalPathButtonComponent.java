@@ -1,19 +1,18 @@
 package qmaze.View.Components;
 
-import qmaze.View.ViewController;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import qmaze.View.ViewController;
 
 /**
- *
  * @author katharine
  */
 public class OptimalPathButtonComponent extends Component {
-    
+
     private final Button btnOptimalPath = new Button();
-    
+
     public OptimalPathButtonComponent(ViewController controller) {
         super(controller);
     }
@@ -24,7 +23,8 @@ public class OptimalPathButtonComponent extends Component {
         btnOptimalPath.setText("Show optimal path");
         btnOptimalPath.setOnAction((ActionEvent eventOpt) -> controller.showOptimalPath());
         btnOptimalPath.setDisable(true);
-        hbox.getChildren().add(btnOptimalPath);
+        hbox.getChildren()
+                .add(btnOptimalPath);
         return hbox;
     }
 

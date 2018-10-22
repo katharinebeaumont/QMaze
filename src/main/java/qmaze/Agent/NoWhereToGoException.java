@@ -3,7 +3,6 @@ package qmaze.Agent;
 import qmaze.Environment.Coordinates;
 
 /**
- *
  * @author katharine
  */
 public class NoWhereToGoException extends Exception {

@@ -1,9 +1,5 @@
 package qmaze.View;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import javafx.scene.layout.Pane;
 import qmaze.Controller.LearningController;
 import qmaze.Controller.TrainingInterruptedException;
@@ -11,34 +7,37 @@ import qmaze.Environment.Coordinates;
 import qmaze.View.Components.AlertPopup;
 import qmaze.View.Components.Component;
 import qmaze.View.MazeComponents.QMazeGrid;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- *
  * @author katharine
  * 2 types of component: animated and non-animated.
- *  - The non-animated (e.g. buttons, sliders, Q Learning panel) are all treated the same.
- *  - The animated (maze) is a special case, built by the controller and directly managed.
+ * - The non-animated (e.g. buttons, sliders, Q Learning panel) are all treated the same.
+ * - The animated (maze) is a special case, built by the controller and directly managed.
  * The ComponentController:
- *  - Acts as a go between for LearningController and components
- *  - Manages state across the Components.
+ * - Acts as a go between for LearningController and components
+ * - Manages state across the Components.
  */
 public class ViewController {
-    
+
     private final LearningController learningController;
     public String STATE;
 
     private TrainingConfig config;
     private String heatMapColour = "None";
-    
+
     private List<Component> components;
     private QMazeGrid maze;
-    
+
     public ViewController() {
         this.STATE = Component.RESET_STATE;
-        learningController = new LearningController();  
+        learningController = new LearningController();
         components = new ArrayList<>();
     }
-    
+
     public void register(Component component) {
         components.add(component);
     }
@@ -51,28 +50,28 @@ public class ViewController {
         this.STATE = Component.ADJUST_PARAM_STATE;
         reset();
     }
-    
+
     public void episodesReset(TrainingConfig config) {
         this.config = config;
         this.STATE = Component.ADJUST_MAZE_STATE;
         reset();
     }
-    
+
     public void heatMapReset(String heatMapColour) {
         this.heatMapColour = heatMapColour;
         this.STATE = Component.TRAINED_STATE;
         reset();
     }
-        
+
     private void reset() {
         components.forEach(Component::reset);
     }
-    
+
     public void hardReset() {
         this.STATE = Component.RESET_STATE;
         reset();
     }
-    
+
     public void roomReset() {
         this.STATE = Component.ADJUST_MAZE_STATE;
         reset();
@@ -85,25 +84,25 @@ public class ViewController {
         System.out.println("Training");
         String previousState = this.STATE;
         try {
-           this.STATE = Component.TRAINED_STATE;
-           learningController.startLearning(maze.getRooms(), maze.getRows(), maze.getColumns(), maze.getStartingState(), config);
-           reset();
+            this.STATE = Component.TRAINED_STATE;
+            learningController.startLearning(maze.getRooms(), maze.getRows(), maze.getColumns(), maze.getStartingState(), config);
+            reset();
         } catch (TrainingInterruptedException te) {
             showAlert(te.getMessage());
             this.STATE = previousState;
         }
     }
-    
+
     public void showOptimalPath() {
         System.out.println("Finding optimal path...");
         List<Coordinates> optimalPath = learningController.getOptimalPath(maze.getStartingState());
         maze.animateMap(optimalPath);
     }
-    
+
     private void showAlert(String message) {
         AlertPopup.popup(message);
     }
-    
+
     /**
      * Getters
      */
@@ -125,17 +124,16 @@ public class ViewController {
         maze = new QMazeGrid(this);
         return maze.build();
     }
-    
+
     public String getHeatMapColour() {
         return heatMapColour;
     }
-        
+
     public Map<Coordinates, Integer> getHeatMap() {
-         return learningController.getHeatMap();
+        return learningController.getHeatMap();
     }
-        
+
     public TrainingConfig getQMazeConfig() {
         return config;
     }
-
 }

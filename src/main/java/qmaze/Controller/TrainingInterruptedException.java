@@ -1,7 +1,6 @@
 package qmaze.Controller;
 
 /**
- *
  * @author katharine
  */
 public class TrainingInterruptedException extends Exception {

@@ -1,27 +1,27 @@
 package qmaze.Agent;
 
+import qmaze.Environment.Coordinates;
 import java.util.ArrayList;
 import java.util.List;
-import qmaze.Environment.Coordinates;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * Q(S(t), A(t)) ← Q(S(t), A(t)) + α [ R(t+1) + γ max Q(S(t+1), a) − Q(S(t), A(t)) ].
- * 
+ *
  * @author katharine
  * I know about:
- *  - My memory of learned rewards and possible actions
- *  - My learning parameters
+ * - My memory of learned rewards and possible actions
+ * - My learning parameters
  * I am told about:
- *  - The surrounding open rooms.
- *  - If there is a reward in this room.
- *   and use them to make decisions about which room to go in next.
+ * - The surrounding open rooms.
+ * - If there is a reward in this room.
+ * and use them to make decisions about which room to go in next.
  * I don't know:
- *  - How many episodes I am trained for
+ * - How many episodes I am trained for
  * I don't control:
- *  - My movements overall - instead I am told to move at each step
- *  and given information about the environment.
+ * - My movements overall - instead I am told to move at each step
+ * and given information about the environment.
  */
 public class Agent {
 
@@ -31,31 +31,31 @@ public class Agent {
     @Setter
     @Getter
     private AgentLearningParameters learningParameters;
-    
+
     public Agent(AgentLearningParameters learningParameters) {
         this.learningParameters = learningParameters;
         this.memory = new AgentMemory();
     }
-    
+
     public Coordinates location() {
         return memory.getCurrentState();
     }
-    
+
     public void start(Coordinates startingState) {
         memory.setCurrentState(startingState);
     }
-    
+
     public void move(Coordinates nextState) {
         memory.move(nextState);
     }
-        
+
     public Coordinates chooseAction(List<Coordinates> nextAvailableActions) throws NoWhereToGoException {
-         //What if there are no available actions?
+        //What if there are no available actions?
         // Should this validation happen further up...
         if (nextAvailableActions.isEmpty()) {
             throw new NoWhereToGoException(memory.getCurrentState());
         }
-        
+
         Coordinates nextAction;
         double useMemory = Math.random();
         if (useMemory < learningParameters.getEpsilon()) {
@@ -64,25 +64,25 @@ public class Agent {
             //Use learned values, but if there are none, it has to be random.
             nextAction = pickBestActionOrRandom(nextAvailableActions);
         }
-        
+
         return nextAction;
     }
-    
+
     public void takeAction(Coordinates actionTaken, double reward) {
-                
+
         //Q(state, action) = R(state, action) + alpha * (Gamma * Max[Q(next state, all actions)] -  R(state, action))
-        
+
         //R(state, action) 
         double currentQValue = memory.rewardFromAction(location(), actionTaken);
-        
+
         //Max[Q(next state, all actions)]
         double estimatedBestFutureReward = 0;
         List<Coordinates> actionsForFutureState = memory.actionsForState(actionTaken);
         if (!actionsForFutureState.isEmpty()) {
             Coordinates max_reward_from_subequent_action = pickBestActionOrRandom(actionsForFutureState);
             estimatedBestFutureReward = memory.rewardFromAction(actionTaken, max_reward_from_subequent_action);
-        }    
-        
+        }
+
         double alpha = learningParameters.getLearningRate();
         double gamma = learningParameters.getGamma();
         //alpha * (Gamma * Max[Q(next state, all actions)] -  R(state, action))
@@ -91,18 +91,18 @@ public class Agent {
         memory.updateMemory(actionTaken, qValue);
         memory.move(actionTaken);
     }
-    
+
     private Coordinates pickRandomAction(List<Coordinates> actions) {
         int options = actions.size();
-        int choice = (int)(Math.random() * options);
+        int choice = (int) (Math.random() * options);
         return actions.get(choice);
     }
-    
+
     private Coordinates pickBestActionOrRandom(List<Coordinates> actions) {
         //There might be more than one best action
         List<Coordinates> bestActions = new ArrayList<>();
         double highestReward = 0;
-        for (Coordinates action: actions) {
+        for (Coordinates action : actions) {
             double rewardMemory = memory.rewardFromAction(location(), action);
             if (rewardMemory > highestReward) {
                 //Clear out any previous candidates for best action
@@ -118,13 +118,12 @@ public class Agent {
         }
         return pickRandomAction(bestActions);
     }
-    
+
     public void introduceSelf(Coordinates startingState) {
         double alpha = learningParameters.getLearningRate();
         double gamma = learningParameters.getGamma();
         double epsilon = learningParameters.getEpsilon();
-        System.out.println("I'm training with epsilon: " + epsilon + " gamma: " 
-                + gamma + " and alpha: " + alpha + "\nStaring at " + startingState.toString());
+        System.out.println("I'm training with epsilon: " + epsilon + " gamma: " + gamma + " and alpha: " + alpha + "\nStaring at "
+                + startingState.toString());
     }
-    
 }

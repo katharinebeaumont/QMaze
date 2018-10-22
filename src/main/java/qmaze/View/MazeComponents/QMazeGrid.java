@@ -1,17 +1,9 @@
 package qmaze.View.MazeComponents;
 
-import qmaze.View.TrainingConfig;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -20,7 +12,6 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -33,16 +24,22 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import qmaze.Environment.Coordinates;
 import qmaze.View.Components.Component;
+import qmaze.View.TrainingConfig;
 import qmaze.View.ViewController;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author katharine
  */
 public class QMazeGrid extends Component {
-    
+
     private static final long ANIMATION_INTERVAL = 500;
 
     @Getter
@@ -65,40 +62,41 @@ public class QMazeGrid extends Component {
     private Coordinates agentLocation;
     private final String SET_START = "Set starting room";
     private final String SET_GOAL = "Set goal room";
-    
+
     public QMazeGrid(ViewController controller) {
         super(controller);
         initialiseMazeRooms();
     }
-    
+
     private void initialiseMazeRooms() {
         TrainingConfig mazeConfig = controller.getQMazeConfig();
         this.rows = mazeConfig.getRows();
         this.columns = mazeConfig.getColumns();
         if (startingState == null) {
-            this.startingState = new Coordinates(0,0);
+            this.startingState = new Coordinates(0, 0);
         }
         if (goalState == null) {
-             this.goalState = new Coordinates(columns-1,rows-1);
+            this.goalState = new Coordinates(columns - 1, rows - 1);
         }
-        
+
         this.rooms = new ArrayList<>();
-        for (int i=0; i<columns; i++) {
-            for (int j=0; j<rows; j++) {
+        for (int i = 0; i < columns; i++) {
+            for (int j = 0; j < rows; j++) {
                 QMazeRoom room = new QMazeRoom(new Coordinates(i, j));
                 rooms.add(room);
             }
         }
-        
+
         scrollPane.setContent(subBackground);
         mainBackground.setCenter(scrollPane);
     }
-    
+
     private void redrawMaze() {
-        
+
         Node centreNode = subBackground.getCenter();
         if (centreNode != null) {
-            subBackground.getChildren().remove(centreNode);
+            subBackground.getChildren()
+                    .remove(centreNode);
         }
         build();
     }
@@ -109,7 +107,7 @@ public class QMazeGrid extends Component {
         if (controller.STATE.equals(RESET_STATE) || controller.STATE.equals(ADJUST_PARAM_STATE)) {
             //Reset maze, according to controller's instructions
             initialiseMazeRooms();
-        }  
+        }
         if (controller.STATE.equals(TRAINED_STATE)) {
             //Show heatmap
             Map<Coordinates, Integer> heatMap = controller.getHeatMap();
@@ -124,23 +122,26 @@ public class QMazeGrid extends Component {
 
     @Override
     public Pane build() {
-        
+
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
         gridPane.setPadding(new Insets(10, 10, 10, 10));
-        
-        for (QMazeRoom room: rooms) {
-            
-            if (room.getCoordinates().equals(goalState)) {
+
+        for (QMazeRoom room : rooms) {
+
+            if (room.getCoordinates()
+                    .equals(goalState)) {
                 room.setReward(100);
             } else {
                 room.setReward(0);
             }
-            int columnIndex = room.getCoordinates().getX();
-            int rowIndex = room.getCoordinates().getY();
-            Rectangle r = new Rectangle(50,50);
-            
+            int columnIndex = room.getCoordinates()
+                    .getX();
+            int rowIndex = room.getCoordinates()
+                    .getY();
+            Rectangle r = new Rectangle(50, 50);
+
             boolean open = room.getOpen();
             Coordinates roomLocation = room.getCoordinates();
             boolean hasAgent = roomLocation.equals(agentLocation);
@@ -155,12 +156,12 @@ public class QMazeGrid extends Component {
             } else {
                 p = Color.DARKGRAY;
             }
-            
+
             BackgroundFill bf = new BackgroundFill(p, null, null);
             stack.setBackground(new Background(bf));
-                
-            Rectangle r2 = new Rectangle(50,50);
-            
+
+            Rectangle r2 = new Rectangle(50, 50);
+
             if (roomLocation.equals(goalState)) {
                 if (hasAgent) {
                     r2.setFill(assets.getAgentAtGoalImage());
@@ -170,20 +171,21 @@ public class QMazeGrid extends Component {
                 //r2.setOpacity(0.4);
             } else if (roomLocation.equals(startingState) && !hasAgent) {
                 r2.setOpacity(0);
-                stack.getChildren().add(new Label("X"));
-            } 
-            else if (hasAgent) {
+                stack.getChildren()
+                        .add(new Label("X"));
+            } else if (hasAgent) {
                 r2.setFill(assets.getAgentImage());
                 //r2.setOpacity(0.4);
             } else {
                 r2.setOpacity(0);
             }
-            stack.getChildren().add(r2);
-            
-            String percentageVisitDesc = (int)(percentageVisits*100) + "%";
+            stack.getChildren()
+                    .add(r2);
+
+            String percentageVisitDesc = (int) (percentageVisits * 100) + "%";
             Tooltip tp = new Tooltip("R:" + rowIndex + ", C:" + columnIndex + ", V:" + percentageVisitDesc);
             Tooltip.install(stack, tp);
-            
+
             stack.setOnMouseClicked(value -> {
                 if (value.isControlDown()) {
                     openOrCloseRoom(room);
@@ -191,16 +193,18 @@ public class QMazeGrid extends Component {
                     configureRoom(room);
                 }
             });
-    
+
             gridPane.add(stack, columnIndex, rowIndex);
         }
-        
+
         subBackground.setCenter(gridPane);
         return mainBackground;
     }
 
     private void openOrCloseRoom(QMazeRoom room) {
-        if (room.getCoordinates().equals(startingState) || room.getCoordinates().equals(goalState)) {
+        if (room.getCoordinates()
+                .equals(startingState) || room.getCoordinates()
+                .equals(goalState)) {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Oh dear");
             alert.setHeaderText("Trying to close this room?");
@@ -213,21 +217,17 @@ public class QMazeGrid extends Component {
             controller.roomReset();
         }
     }
-    
+
     private void configureRoom(QMazeRoom room) {
-        
-        ObservableList<String> options = 
-        FXCollections.observableArrayList(
-            SET_START,
-            SET_GOAL
-        );
+
+        ObservableList<String> options = FXCollections.observableArrayList(SET_START, SET_GOAL);
         ChoiceDialog cd = new ChoiceDialog(SET_START, options);
         cd.setTitle("Configure Rooms");
         cd.setHeaderText("Change the starting or goal room");
         Optional<String> result = cd.showAndWait();
         result.ifPresent(selected -> changeRoom(selected, room));
     }
-    
+
     private void changeRoom(String selected, QMazeRoom room) {
         Coordinates roomLocation = room.getCoordinates();
         boolean isStartingState = roomLocation.equals(startingState);
@@ -243,26 +243,26 @@ public class QMazeGrid extends Component {
             controller.roomReset();
         }
     }
-    
+
     /**
      * Animation/heatmap stuff
      */
     public void showVisitCount(Map<Coordinates, Integer> heatMap) {
-    
+
         if (heatMap == null) {
             return;
         }
-        
+
         //Get max visit count
         double maxVisit = getTotalVisitCount(heatMap);
         double highestVisit = getHighestVisitCount(heatMap);
-        
-        for (QMazeRoom room: rooms) {
+
+        for (QMazeRoom room : rooms) {
             Coordinates roomLocation = room.getCoordinates();
             if (heatMap.containsKey(roomLocation)) {
                 double roomVisits = heatMap.get(roomLocation);
-                room.setPercentageVisits(roomVisits/maxVisit);
-                room.setVisitCount(roomVisits/highestVisit);
+                room.setPercentageVisits(roomVisits / maxVisit);
+                room.setVisitCount(roomVisits / highestVisit);
             } else {
                 room.setPercentageVisits(0);
                 room.setVisitCount(0);
@@ -270,60 +270,60 @@ public class QMazeGrid extends Component {
         }
         redrawMaze();
     }
-    
+
     private double getTotalVisitCount(Map<Coordinates, Integer> heatMap) {
         double totalVisits = 0;
         Set<Coordinates> keys = heatMap.keySet();
-        for (Coordinates key: keys) {
+        for (Coordinates key : keys) {
             int value = heatMap.get(key);
-            totalVisits = totalVisits + (double)value;
+            totalVisits = totalVisits + (double) value;
         }
         return totalVisits;
     }
-    
+
     private double getHighestVisitCount(Map<Coordinates, Integer> heatMap) {
         int highestVisit = 0;
         Set<Coordinates> keys = heatMap.keySet();
-        for (Coordinates key: keys) {
+        for (Coordinates key : keys) {
             int value = heatMap.get(key);
             if (value > highestVisit) {
                 highestVisit = value;
             }
         }
-        return (double)highestVisit;
+        return (double) highestVisit;
     }
-    
+
     private Paint getHeatMapColor(double visitCount) {
         //Want to exaggerate more heavily visited rooms
         Color fillColor = Color.color(1, 1, 1);
         String heatMapColour = controller.getHeatMapColour();
-        switch(heatMapColour) {
-            case("Green"):
-                fillColor = Color.color((1-visitCount), 1, (1-visitCount));
-                break;
-            case("Yellow"):
-                fillColor = Color.color(1, 1, (1-visitCount));
-                break;
-            case("Pink"):
-                fillColor = Color.color(1, (1-visitCount), 1);
-                break;
-            case("Cyan"):
-                fillColor = Color.color((1-visitCount), 1, 1);
-                break;
-            case("Blue"):
-                fillColor = Color.color((1-visitCount), (1-visitCount), 1);
-                break;
-            case("Red"):
-                fillColor = Color.color(1, (1-visitCount), (1-visitCount)); 
-                break;
-            default:
-                break;
+        switch (heatMapColour) {
+        case ("Green"):
+            fillColor = Color.color((1 - visitCount), 1, (1 - visitCount));
+            break;
+        case ("Yellow"):
+            fillColor = Color.color(1, 1, (1 - visitCount));
+            break;
+        case ("Pink"):
+            fillColor = Color.color(1, (1 - visitCount), 1);
+            break;
+        case ("Cyan"):
+            fillColor = Color.color((1 - visitCount), 1, 1);
+            break;
+        case ("Blue"):
+            fillColor = Color.color((1 - visitCount), (1 - visitCount), 1);
+            break;
+        case ("Red"):
+            fillColor = Color.color(1, (1 - visitCount), (1 - visitCount));
+            break;
+        default:
+            break;
         }
         return fillColor;
     }
-    
+
     public void animateMap(List<Coordinates> optimalPath) {
-        
+
         animateAgent(startingState);
 
         System.out.println("Finding path");
@@ -332,24 +332,22 @@ public class QMazeGrid extends Component {
         System.out.println("Interval is: " + interval);
         long timeMillis = 0;
         for (Coordinates agentLocation : optimalPath) {
-            
-            Timeline beat = new Timeline(
-                new KeyFrame(Duration.millis(timeMillis),         event -> animateAgent(agentLocation))
-            );
+
+            Timeline beat = new Timeline(new KeyFrame(Duration.millis(timeMillis), event -> animateAgent(agentLocation)));
             beat.setAutoReverse(true);
             beat.setCycleCount(1);
             beat.play();
             timeMillis = timeMillis + interval;
-        } 
+        }
     }
 
     private void animateAgent(Coordinates roomWithAgent) {
         setAgentLocation(roomWithAgent);
         redrawMaze();
     }
-    
+
     private long getInterval(int stepsToGoal) {
-        
+
         System.out.println("Steps are: " + stepsToGoal);
         long interval = ANIMATION_INTERVAL;
         //Whole animation should take around 30 seconds or less. If there are more than 6000
@@ -362,7 +360,7 @@ public class QMazeGrid extends Component {
             //So if we have more than 60 steps to the optimal path, 
             // then we want the interval to be smaller to accomodate this
             long millisAvailable = 30 * 1000;
-            interval = millisAvailable/(long)stepsToGoal;
+            interval = millisAvailable / (long) stepsToGoal;
         }
         return interval;
     }

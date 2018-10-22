@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- *
  * @author katharine
  * COLUMN IS X
  * ROW IS Y
@@ -18,7 +17,7 @@ import lombok.ToString;
 public class Coordinates {
     int x;
     int y;
-    
+
     public Coordinates(Coordinates coordinates) {
         this.x = coordinates.getX();
         this.y = coordinates.getY();
