@@ -27,7 +27,7 @@ public class Maze {
     private Room goal;
     
     public Maze(int rows, int columns) {
-        this.rooms = new ArrayList();
+        this.rooms = new ArrayList<>();
         buildMaze(rows, columns);
     }
     
@@ -45,7 +45,7 @@ public class Maze {
     public void setOpen(Coordinates state, boolean open) {
         
         Room r = getRoom(state);
-        r.open(open);
+        r.setOpen(open);
     }
     
     public void setGoalState(Coordinates state, int reward) {
@@ -74,9 +74,9 @@ public class Maze {
     
     public ArrayList<Coordinates> getAdjoiningStates(Coordinates state) {
         Room r = getRoom(state);
-        ArrayList<Coordinates> adjoiningRooms = new ArrayList();
+        ArrayList<Coordinates> adjoiningRooms = new ArrayList<>();
         rooms.stream().filter((otherRoom) -> (otherRoom.isOpen() && otherRoom.adjoins(r))).forEachOrdered((otherRoom) -> {
-            adjoiningRooms.add(new Coordinates(otherRoom.getXCoordinate(), otherRoom.getYCoordinate()));
+            adjoiningRooms.add(new Coordinates(otherRoom.getX(), otherRoom.getY()));
         });
         return adjoiningRooms;
    }   

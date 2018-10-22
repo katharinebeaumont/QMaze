@@ -61,8 +61,8 @@ public class LearningGridComponent extends Component {
         for (Coordinates roomCoordinate: roomCoordinates) {
             Pane textPane = new Pane();
             
-            int columnIndex = roomCoordinate.getXCoordinate();
-            int rowIndex = roomCoordinate.getYCoordinate();
+            int columnIndex = roomCoordinate.getX();
+            int rowIndex = roomCoordinate.getY();
             StringBuilder sb = new StringBuilder();
             sb.append("Room ");
             sb.append(rowIndex);
@@ -111,10 +111,10 @@ public class LearningGridComponent extends Component {
     }
     
     private String getArrowDirection(Coordinates currentRoom, Coordinates nextRoom) {
-        int currentRow = currentRoom.getYCoordinate();
-        int currentColumn = currentRoom.getXCoordinate();
-        int nextRow = nextRoom.getYCoordinate();
-        int nextColumn = nextRoom.getXCoordinate();
+        int currentRow = currentRoom.getY();
+        int currentColumn = currentRoom.getX();
+        int nextRow = nextRoom.getY();
+        int nextColumn = nextRoom.getX();
         if (currentRow == nextRow && currentColumn > nextColumn) {
             return " <- ";
         } else if (currentRow == nextRow && currentColumn < nextColumn) {
@@ -128,10 +128,10 @@ public class LearningGridComponent extends Component {
     }
     
     private String getDirectionDesc(Coordinates currentRoom, Coordinates nextRoom) {
-        int currentRow = currentRoom.getYCoordinate();
-        int currentColumn = currentRoom.getXCoordinate();
-        int nextRow = nextRoom.getYCoordinate();
-        int nextColumn = nextRoom.getXCoordinate();
+        int currentRow = currentRoom.getY();
+        int currentColumn = currentRoom.getX();
+        int nextRow = nextRoom.getY();
+        int nextColumn = nextRoom.getX();
         if (currentRow == nextRow && currentColumn > nextColumn) {
             return "left";
         } else if (currentRow == nextRow && currentColumn < nextColumn) {

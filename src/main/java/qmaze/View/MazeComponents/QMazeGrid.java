@@ -125,8 +125,8 @@ public class QMazeGrid extends Component {
             } else {
                 room.setReward(0);
             }
-            int columnIndex = room.getCoordinates().getXCoordinate();
-            int rowIndex = room.getCoordinates().getYCoordinate();
+            int columnIndex = room.getCoordinates().getX();
+            int rowIndex = room.getCoordinates().getY();
             Rectangle r = new Rectangle(50,50);
             
             boolean open = room.getOpen();

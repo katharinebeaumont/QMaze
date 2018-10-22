@@ -5,6 +5,11 @@
  */
 package qmaze.Environment;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
 /**
  *
  * @author katharine
@@ -17,57 +22,30 @@ package qmaze.Environment;
  *  - About the agent
  *  - About the maze
  */
+@Setter
+@Getter
+@RequiredArgsConstructor
 public class Room {
     
     private boolean open = true;
     private double reward = 0;
-    private final int x_coordinate;
-    private final int y_coordinate;
-    
-    public Room(int x_coordinate, int y_coordinate) {
-        this.x_coordinate = x_coordinate;
-        this.y_coordinate = y_coordinate;
-    }
+    private final int x;
+    private final int y;
     
     public Room(Coordinates coordinates) {
-        this.x_coordinate = coordinates.getXCoordinate();
-        this.y_coordinate = coordinates.getYCoordinate();
+        this.x = coordinates.getX();
+        this.y = coordinates.getY();
     }
-
-    public void open(boolean open) {
-        this.open = open;
-    }
-    
-    public boolean isOpen() {
-        return open;
-    }
-    
-    public double getReward() {
-        return reward;
-    }
-
-    public void setReward(double reward) {
-        this.reward = reward;
-    } 
-    
-    public int getXCoordinate() {
-        return x_coordinate;
-    }
-    
-    public int getYCoordinate() {
-        return y_coordinate;
-    }
-        
     public boolean hasSameLocation(Room otherRoom) {
-        return otherRoom.getXCoordinate() == x_coordinate && otherRoom.getYCoordinate() == y_coordinate;
+        return otherRoom.getX() == x && otherRoom.getY() == y;
     }
     
     public boolean adjoins(Room otherRoom) {
-        int x_other = otherRoom.getXCoordinate();
-        int y_other = otherRoom.getYCoordinate();
-        return (x_other == x_coordinate && (y_other == y_coordinate-1 )) 
-                || (x_other == x_coordinate && (y_other == y_coordinate+1 ))
-                || (y_other == y_coordinate && x_other == x_coordinate-1)
-                || (y_other == y_coordinate && x_other == x_coordinate+1);
+        int x_other = otherRoom.getX();
+        int y_other = otherRoom.getY();
+        return (x_other == x && (y_other == y -1 ))
+                || (x_other == x && (y_other == y +1 ))
+                || (y_other == y && x_other == x -1)
+                || (y_other == y && x_other == x +1);
     }
 }
