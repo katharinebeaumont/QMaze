@@ -32,6 +32,8 @@ import javafx.util.Duration;
 import qmaze.Environment.Coordinates;
 import qmaze.View.Components.Component;
 import qmaze.View.ViewController;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
@@ -40,16 +42,24 @@ import qmaze.View.ViewController;
 public class QMazeGrid extends Component {
     
     private static final long ANIMATION_INTERVAL = 500;
-    
+
+    @Getter
     private ArrayList<QMazeRoom> rooms;
-    BorderPane mainBackground = new BorderPane();
-    ScrollPane scrollPane = new ScrollPane();
-    BorderPane subBackground = new BorderPane();
-    
+    private BorderPane mainBackground = new BorderPane();
+    private ScrollPane scrollPane = new ScrollPane();
+    private BorderPane subBackground = new BorderPane();
+
+    @Getter
     private int rows;
+    @Getter
     private int columns;
+    @Setter
+    @Getter
     private Coordinates startingState;
+    @Setter
+    @Getter
     private Coordinates goalState;
+    @Setter
     private Coordinates agentLocation;
     private final String SET_START = "Set starting room";
     private final String SET_GOAL = "Set goal room";
@@ -70,7 +80,7 @@ public class QMazeGrid extends Component {
              this.goalState = new Coordinates(columns-1,rows-1);
         }
         
-        this.rooms = new ArrayList();
+        this.rooms = new ArrayList<>();
         for (int i=0; i<columns; i++) {
             for (int j=0; j<rows; j++) {
                 QMazeRoom room = new QMazeRoom(new Coordinates(i, j));
@@ -100,12 +110,12 @@ public class QMazeGrid extends Component {
         }  
         if (controller.STATE.equals(TRAINED_STATE)) {
             //Show heatmap
-            HashMap heatMap = controller.getHeatMap();
+            HashMap<Coordinates, Integer> heatMap = controller.getHeatMap();
             showVisitCount(heatMap);
         }
         if (controller.STATE.equals(ADJUST_MAZE_STATE)) {
             //Clear heatmap
-            showVisitCount(new HashMap());
+            showVisitCount(new HashMap<>());
         }
         redrawMaze();
     }
@@ -131,7 +141,7 @@ public class QMazeGrid extends Component {
             
             boolean open = room.getOpen();
             Coordinates roomLocation = room.getCoordinates();
-            boolean hasAgent = agentLocation != null && roomLocation.equals(agentLocation);
+            boolean hasAgent = roomLocation.equals(agentLocation);
             double percentageVisits = room.getPercentageVisits();
             double totalVisits = room.getVisitCount();
             double fillFactor = (percentageVisits + totalVisits) / 2;
@@ -172,18 +182,12 @@ public class QMazeGrid extends Component {
             Tooltip tp = new Tooltip("R:" + rowIndex + ", C:" + columnIndex + ", V:" + percentageVisitDesc);
             Tooltip.install(stack, tp);
             
-            stack.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent value) {
-                    
-                    if (value.isControlDown()) {
-                        openOrCloseRoom(room);
-                    } else {
-                        configureRoom(room);
-                    }
+            stack.setOnMouseClicked(value -> {
+                if (value.isControlDown()) {
+                    openOrCloseRoom(room);
+                } else {
+                    configureRoom(room);
                 }
-
-                
             });
     
             gridPane.add(stack, columnIndex, rowIndex);
@@ -360,45 +364,4 @@ public class QMazeGrid extends Component {
         }
         return interval;
     }
-    
-    
-    
-    /**
-     * Getters/setters
-     */
-    public ArrayList<QMazeRoom> getRooms() {
-        return rooms;
-    }
-    
-    public int getRows() {
-        return rows;
-    }
-    public int getColumns() {
-        return columns;
-    }
-    
-    public Coordinates getStartingState() {
-        return startingState;
-    }
-
-    public void setStartingState(Coordinates startingState) {
-        this.startingState = startingState;
-    }
-        
-    public Coordinates getGoalState() {
-        return goalState;
-    }
-    
-    public void setGoalState(Coordinates goalState) {
-        this.goalState = goalState;
-    }
-    
-    public Coordinates getAgentLocation() {
-        return agentLocation;
-    }
-    
-    private void setAgentLocation(Coordinates agentLocation) {
-        this.agentLocation = agentLocation;
-    }
-    
 }

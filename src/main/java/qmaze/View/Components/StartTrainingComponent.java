@@ -21,9 +21,7 @@ public class StartTrainingComponent extends Component {
         HBox hbox = new HBox();
         Button btn = new Button();
         btn.setText("Start training");
-        btn.setOnAction((ActionEvent event) -> {
-            controller.startTraining();
-        });
+        btn.setOnAction((ActionEvent event) -> controller.startTraining());
         hbox.getChildren().add(btn);
         return hbox;
     }

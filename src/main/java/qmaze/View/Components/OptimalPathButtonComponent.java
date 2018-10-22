@@ -22,9 +22,7 @@ public class OptimalPathButtonComponent extends Component {
     public Pane build() {
         HBox hbox = new HBox();
         btnOptimalPath.setText("Show optimal path");
-        btnOptimalPath.setOnAction((ActionEvent eventOpt) -> {
-            controller.showOptimalPath();
-        });
+        btnOptimalPath.setOnAction((ActionEvent eventOpt) -> controller.showOptimalPath());
         btnOptimalPath.setDisable(true);
         hbox.getChildren().add(btnOptimalPath);
         return hbox;
