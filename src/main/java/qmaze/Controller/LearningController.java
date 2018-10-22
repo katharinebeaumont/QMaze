@@ -33,7 +33,6 @@ public class LearningController {
 
     private Maze maze;
     private Agent agent;
-    private AgentLearningParameters learningParameters;
     @Getter
     private Map<Coordinates, Integer> heatMap;
     private static final int EXCEPTION_THRESHOLD = 20;
@@ -80,7 +79,8 @@ public class LearningController {
     }
 
     private void initialiseAgent(TrainingConfig mazeConfig) {
-        learningParameters = new AgentLearningParameters(mazeConfig.getEpsilon(), mazeConfig.getAlpha(), mazeConfig.getGamma());
+        AgentLearningParameters learningParameters = new AgentLearningParameters(mazeConfig.getEpsilon(), mazeConfig.getAlpha(),
+                mazeConfig.getGamma());
         agent = new Agent(learningParameters);
     }
 
