@@ -27,7 +27,7 @@ public class AgentMemoryTest {
         
         int reward = 0;
         AgentMemory memory = new AgentMemory();
-        memory.setStartingState(currentState);
+        memory.setCurrentState(currentState);
         //Update memory when there is none
         
         memory.updateMemory(nextState, reward);
@@ -66,7 +66,7 @@ public class AgentMemoryTest {
         
         //SS : S1,0
         AgentMemory memory = new AgentMemory();
-        memory.setStartingState(startingState);
+        memory.setCurrentState(startingState);
         ArrayList actionsFromStartingState = memory.actionsForState(startingState);
         assertTrue(actionsFromStartingState.isEmpty());
         memory.updateMemory(stateOne, 0);

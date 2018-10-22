@@ -34,7 +34,7 @@ public class ViewController {
     public ViewController() {
         this.STATE = Component.RESET_STATE;
         learningController = new LearningController();  
-        components = new ArrayList();
+        components = new ArrayList<>();
     }
     
     public void register(Component component) {
@@ -63,9 +63,7 @@ public class ViewController {
     }
         
     private void reset() {
-        components.forEach((c) -> {
-            c.reset();
-        });
+        components.forEach(Component::reset);
     }
     
     public void hardReset() {
@@ -116,7 +114,7 @@ public class ViewController {
 
     public HashMap<Coordinates, HashMap<Coordinates, Double>> getLearnings() {
         if (maze == null) {
-            return new HashMap();
+            return new HashMap<>();
         }
         return learningController.getLearnings(maze.getRooms());
     }

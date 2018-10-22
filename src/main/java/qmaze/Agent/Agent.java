@@ -35,7 +35,7 @@ public class Agent {
     }
     
     public void start(Coordinates startingState) {
-        memory.setStartingState(startingState);
+        memory.setCurrentState(startingState);
     }
     
     public void move(Coordinates nextState) {
@@ -93,14 +93,14 @@ public class Agent {
     
     private Coordinates pickBestActionOrRandom(ArrayList<Coordinates> actions) {
         //There might be more than one best action
-        ArrayList<Coordinates> bestActions = new ArrayList();
+        ArrayList<Coordinates> bestActions = new ArrayList<>();
         double highestReward = 0;
         for (Coordinates action: actions) {
             double rewardMemory = memory.rewardFromAction(location(), action);
             if (rewardMemory > highestReward) {
                 //Clear out any previous candidates for best action
                 highestReward = rewardMemory;
-                bestActions = new ArrayList();
+                bestActions = new ArrayList<>();
                 bestActions.add(action);
             }
             if (rewardMemory == highestReward) {

@@ -16,7 +16,7 @@ public class OptimalEpisode extends Episode {
         super(agent,maze,startingState);
     }
     
-    public ArrayList findOptimalPath() throws EpisodeInterruptedException {
+    public ArrayList<Coordinates> findOptimalPath() throws EpisodeInterruptedException {
         
         AgentLearningParameters originalLearningParameters = agent.getLearningParameters();
         haltExploration(originalLearningParameters);

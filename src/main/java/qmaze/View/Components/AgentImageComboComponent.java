@@ -15,7 +15,7 @@ import javafx.scene.layout.Pane;
  */
 public class AgentImageComboComponent extends Component {
 
-    private ComboBox agentImage = new ComboBox();
+    private ComboBox<String> agentImage = new ComboBox<>();
     
     public AgentImageComboComponent(ViewController controller) {
         super(controller);
@@ -26,15 +26,12 @@ public class AgentImageComboComponent extends Component {
         
         HBox hbox = new HBox();
         ObservableList<String> options = assets.getAgentOptions();
-        agentImage = new ComboBox(options);
+        agentImage = new ComboBox<>(options);
         agentImage.setPromptText("Toggle Agent");
         
-        agentImage.valueProperty().addListener(new ChangeListener<String>() {
-            @Override 
-            public void changed(ObservableValue ov, String t, String t1) { 
-                assets.setTheme(t1);
-                controller.roomReset();
-            }    
+        agentImage.valueProperty().addListener((ov, t, t1) -> {
+            assets.setTheme(t1);
+            controller.roomReset();
         });
         hbox.getChildren().add(agentImage);
         return hbox;

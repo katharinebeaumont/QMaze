@@ -70,14 +70,14 @@ public class LearningGridComponent extends Component {
             sb.append(columnIndex);
             sb.append("\n");
             HashMap<Coordinates,Double> actions = roomLearnings.get(roomCoordinate);
-            String toolTipText = "";
+            StringBuilder toolTipText = new StringBuilder();
             if (goalState.equals(roomCoordinate)) {
                 sb.append("GOAL");
-                toolTipText = "Yay!";
+                toolTipText = new StringBuilder("Yay!");
                 textPane.setStyle(assets.getGoalRoomBackground());
             } else if (actions == null || actions.isEmpty()) {
                 sb.append("No info");
-                toolTipText = "Maybe we didn't visit this room?";
+                toolTipText = new StringBuilder("Maybe we didn't visit this room?");
                 textPane.setStyle(assets.getUnvisitedRoomBackground());
             }
             else {
@@ -89,12 +89,16 @@ public class LearningGridComponent extends Component {
                     sb.append("\n");
                     textPane.setStyle(assets.getWhiteBackground());
                     String qValueForToolTip = String.format("%.4f", entry.getValue());
-                    toolTipText = toolTipText + "Moving " + getDirectionDesc(roomCoordinate, nextRoom) + " for " + qValueForToolTip + "\n";
+                    toolTipText.append("Moving ")
+                            .append(getDirectionDesc(roomCoordinate, nextRoom))
+                            .append(" for ")
+                            .append(qValueForToolTip)
+                            .append("\n");
                 }
             }
             Text t = new Text(sb.toString());
             
-            Tooltip tp = new Tooltip(toolTipText);
+            Tooltip tp = new Tooltip(toolTipText.toString());
             Tooltip.install(textPane, tp);
                     
             textPane.getChildren().add(t);

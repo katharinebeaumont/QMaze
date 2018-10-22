@@ -35,9 +35,9 @@ public class LearningParameterComponent extends Component {
     private final int initialRows = 4;
     private final int initialColumns = 4;
     private final int initialEpisodes = 50;
-    final SpinnerValueFactory.IntegerSpinnerValueFactory mazeSpinnerRows = new SpinnerValueFactory.IntegerSpinnerValueFactory(2,16,initialRows);
-    final SpinnerValueFactory.IntegerSpinnerValueFactory mazeSpinnerColumns = new SpinnerValueFactory.IntegerSpinnerValueFactory(2,16,initialColumns);
-    final SpinnerValueFactory.IntegerSpinnerValueFactory mazeSpinnerEpisodes = new SpinnerValueFactory.IntegerSpinnerValueFactory(1,MAX_EPISODES,initialEpisodes);
+    private final SpinnerValueFactory.IntegerSpinnerValueFactory mazeSpinnerRows = new SpinnerValueFactory.IntegerSpinnerValueFactory(2,16,initialRows);
+    private final SpinnerValueFactory.IntegerSpinnerValueFactory mazeSpinnerColumns = new SpinnerValueFactory.IntegerSpinnerValueFactory(2,16,initialColumns);
+    private final SpinnerValueFactory.IntegerSpinnerValueFactory mazeSpinnerEpisodes = new SpinnerValueFactory.IntegerSpinnerValueFactory(1,MAX_EPISODES,initialEpisodes);
 
     public LearningParameterComponent(ViewController controller) {
         super(controller);

@@ -5,6 +5,7 @@ import qmaze.Agent.Agent;
 import qmaze.Agent.NoWhereToGoException;
 import qmaze.Environment.Coordinates;
 import qmaze.Environment.Maze;
+import lombok.Getter;
 
 /**
  *
@@ -15,17 +16,18 @@ public class Episode {
     
     public final Agent agent;
     public final Maze maze;
-    public final int STEP_LIMIT = 5000;
+    private final int STEP_LIMIT = 5000;
     
-    public final Coordinates startingState;
-    
-    public ArrayList<Coordinates> episodeSteps;
+    final Coordinates startingState;
+
+    @Getter
+    ArrayList<Coordinates> episodeSteps;
     
     public Episode(Agent agent, Maze maze, Coordinates startingState) {
         this.agent = agent;
         this.maze = maze;
         this.startingState = startingState;
-        this.episodeSteps = new ArrayList();
+        this.episodeSteps = new ArrayList<>();
     }
     
     public void play() throws EpisodeInterruptedException {
@@ -44,10 +46,6 @@ public class Episode {
         System.out.println("Finished episode with " + episodeSteps.size() + " steps.");
     }
 
-    public ArrayList<Coordinates> getEpisodeSteps() {
-        return episodeSteps;
-    }
-    
     public void recordSteps(Coordinates action) throws EpisodeInterruptedException {
         episodeSteps.add(action);
         if (episodeSteps.size() == STEP_LIMIT) {

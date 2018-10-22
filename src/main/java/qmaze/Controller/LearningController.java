@@ -9,6 +9,7 @@ import qmaze.Environment.Coordinates;
 import qmaze.Environment.Maze;
 import qmaze.View.TrainingConfig;
 import qmaze.View.MazeComponents.QMazeRoom;
+import lombok.NoArgsConstructor;
 
 /**
  *
@@ -25,6 +26,7 @@ import qmaze.View.MazeComponents.QMazeRoom;
  *  - Journey data
  * I pass information from the model to the view.
  */
+@NoArgsConstructor
 public class LearningController {
 
     private Maze maze;
@@ -33,14 +35,10 @@ public class LearningController {
     private HashMap<Coordinates, Integer> heatMap;
     private static final int EXCEPTION_THRESHOLD = 20;
     
-    public LearningController() {
-        
-    }
-    
     public void startLearning(ArrayList<QMazeRoom> rooms, int rows, int columns, Coordinates startingState, TrainingConfig mazeConfig) throws TrainingInterruptedException {
         
         int exceptionCount = 0;
-        heatMap = new HashMap();
+        heatMap = new HashMap<>();
         initialiseMaze(rooms, rows, columns);
         initialiseAgent(mazeConfig);
         agent.introduceSelf(startingState);
@@ -84,7 +82,7 @@ public class LearningController {
       
     public HashMap<Coordinates, HashMap<Coordinates,Double>> getLearnings(ArrayList<QMazeRoom> rooms) {
          
-        HashMap<Coordinates, HashMap<Coordinates,Double>> learning = new HashMap();
+        HashMap<Coordinates, HashMap<Coordinates,Double>> learning = new HashMap<>();
         if (agent == null) {
             return learning;
         }
@@ -93,7 +91,7 @@ public class LearningController {
         rooms.forEach((r) -> {
             Coordinates roomLocation = r.getCoordinates();
             if (r.getOpen()) {
-                HashMap<Coordinates,Double> rewardFromRoom = new HashMap();
+                HashMap<Coordinates,Double> rewardFromRoom = new HashMap<>();
                 ArrayList<Coordinates> potentialActions = memory.actionsForState(roomLocation);
                 for (Coordinates action: potentialActions) {
                     double reward = memory.rewardFromAction(roomLocation, action);
@@ -107,7 +105,7 @@ public class LearningController {
     
     public ArrayList<Coordinates> getOptimalPath(Coordinates startingState) {
         OptimalEpisode e = new OptimalEpisode(agent, maze, startingState);
-        ArrayList<Coordinates> optimalPath = new ArrayList();
+        ArrayList<Coordinates> optimalPath = new ArrayList<>();
         
         try { 
             optimalPath = e.findOptimalPath();

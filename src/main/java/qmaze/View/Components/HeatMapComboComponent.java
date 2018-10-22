@@ -15,7 +15,7 @@ import javafx.scene.layout.Pane;
  */
 public class HeatMapComboComponent extends Component {
 
-    private ComboBox heatMap = new ComboBox();
+    private ComboBox<String> heatMap = new ComboBox<>();
     
     public HeatMapComboComponent(ViewController controller) {
         super(controller);
@@ -35,15 +35,10 @@ public class HeatMapComboComponent extends Component {
                 "Red",
                 "None"
             );
-        heatMap = new ComboBox(options);
+        heatMap = new ComboBox<>(options);
         heatMap.setPromptText("Heat map colour");
         
-        heatMap.valueProperty().addListener(new ChangeListener<String>() {
-            @Override 
-            public void changed(ObservableValue ov, String t, String t1) {                
-                controller.heatMapReset(t1);
-            }    
-        });
+        heatMap.valueProperty().addListener((ov, t, t1) -> controller.heatMapReset(t1));
         hbox.getChildren().add(heatMap);
         return hbox;
     }

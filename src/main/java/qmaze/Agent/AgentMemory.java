@@ -3,7 +3,10 @@ package qmaze.Agent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import qmaze.Environment.Coordinates;
-        
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  *
  * @author katharine
@@ -18,36 +21,28 @@ import qmaze.Environment.Coordinates;
  *  then set starting state before anything else can happen.
  *  Why not do this in the constructor? We use the memory for multiple episodes.
  */
+@NoArgsConstructor
 public class AgentMemory {
     
-    private HashMap<Coordinates, HashMap<Coordinates, Double>> mazeMemory;
+    private HashMap<Coordinates, HashMap<Coordinates, Double>> mazeMemory = new HashMap<>();
+
+    @Setter
+    @Getter
     private Coordinates currentState;
-    
-    public AgentMemory() {
-        mazeMemory = new HashMap();
-    }
-    
-    public void setStartingState(Coordinates startingState) {
-        this.currentState = startingState;
-    }
-    
-    public Coordinates getCurrentState() {
-        return currentState;
-    }
     
     public void updateMemory(Coordinates action, double reward) {
         //Have I been in this room before?
-        HashMap nextSteps = mazeMemory.get(currentState);
+        HashMap<Coordinates, Double> nextSteps = mazeMemory.get(currentState);
         //Nope, create blank slate
         if (nextSteps == null) {
-            nextSteps = new HashMap();
+            nextSteps = new HashMap<>();
         }
         
         //Have I checked what's in the next rooms
         Double rewardMemory = (Double)nextSteps.get(action);
         //Nope, blank slate
         if (rewardMemory == null) {
-            rewardMemory = new Double(0);
+            rewardMemory = (double) 0;
         }
         
         //Store memory
@@ -55,13 +50,13 @@ public class AgentMemory {
         mazeMemory.put(currentState, nextSteps);  
     }
     
-    public void move(Coordinates action) { 
+    void move(Coordinates action) {
         this.currentState = action;
     }
     
     //What do I remember about future actions>
     public ArrayList<Coordinates> actionsForState(Coordinates state) {
-        HashMap nextSteps = mazeMemory.get(state);
+        HashMap<Coordinates, Double> nextSteps = mazeMemory.get(state);
         if (nextSteps == null) {
             return new ArrayList<>();
         }
