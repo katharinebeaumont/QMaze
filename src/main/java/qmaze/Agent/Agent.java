@@ -3,6 +3,8 @@ package qmaze.Agent;
 import java.util.ArrayList;
 import java.util.List;
 import qmaze.Environment.Coordinates;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Q(S(t), A(t)) ← Q(S(t), A(t)) + α [ R(t+1) + γ max Q(S(t+1), a) − Q(S(t), A(t)) ].
@@ -22,8 +24,12 @@ import qmaze.Environment.Coordinates;
  *  and given information about the environment.
  */
 public class Agent {
-    
+
+    @Getter
     private final AgentMemory memory;
+
+    @Setter
+    @Getter
     private AgentLearningParameters learningParameters;
     
     public Agent(AgentLearningParameters learningParameters) {
@@ -111,18 +117,6 @@ public class Agent {
             }
         }
         return pickRandomAction(bestActions);
-    }
-    
-    public AgentMemory getMemory() {
-        return memory;
-    }
-    
-    public AgentLearningParameters getLearningParameters() {
-        return learningParameters;
-    }
-    
-    public void setLearningParameters(AgentLearningParameters parameters) {
-        this.learningParameters = parameters;
     }
     
     public void introduceSelf(Coordinates startingState) {
