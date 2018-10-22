@@ -6,6 +6,7 @@
 package qmaze.Environment;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -24,6 +25,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@EqualsAndHashCode(of = {"x", "y"})
 @RequiredArgsConstructor
 public class Room {
     
@@ -36,10 +38,7 @@ public class Room {
         this.x = coordinates.getX();
         this.y = coordinates.getY();
     }
-    public boolean hasSameLocation(Room otherRoom) {
-        return otherRoom.getX() == x && otherRoom.getY() == y;
-    }
-    
+
     public boolean adjoins(Room otherRoom) {
         int x_other = otherRoom.getX();
         int y_other = otherRoom.getY();
